@@ -10,14 +10,15 @@ import type { TipRow } from "../types/closeout.types";
  * - PM Manager
  *
  * Busboy:
- * - Floor Tips are auto-calculated from server BB CC total.
- * - Formula: Floor Tips = Server BB CC Total / Number of Busboys
+ * - Has extra Cash Tips column.
+ * - Floor Tips can later come from server BB CC split.
  *
  * Manager:
- * - Floor Tips stay manual.
+ * - No Cash Tips column.
  *
  * Total Tips:
  * - House Charge Tips + CC Tips + Floor Tips
+ * - Cash Tips is separate and NOT included in Total Tips.
  */
 
 type TipTableType =
@@ -32,6 +33,7 @@ type Props = {
   rows: TipRow[];
   percent?: string;
   floorTipPool?: number;
+  cashTipPool?: number;
   onPercentChange?: (value: string) => void;
   onAdd: () => void;
   onRemove: (index: number) => void;
@@ -49,18 +51,13 @@ export default function TipTable({
   rows,
   percent,
   floorTipPool = 0,
+  cashTipPool = 0,
   onPercentChange,
   onAdd,
   onRemove,
   onChange,
 }: Props) {
   const isBusboy = type === "AM_BUSBOY" || type === "PM_BUSBOY";
-
-  /**
-   * If this is busboy table, divide the server BB CC pool
-   * by number of busboys.
-   */
-
 
   return (
     <div className="box compact-section">
@@ -90,58 +87,109 @@ export default function TipTable({
             <th>CC Tips</th>
             <th>Floor Tips</th>
             <th>Total Tips</th>
+
+            {isBusboy && <th>Cash Tips</th>}
+
             <th className="no-print">X</th>
           </tr>
         </thead>
 
-       <tbody>
-  {rows.map((row, index) => {
+        <tbody>
+          {rows.map((row, index) => {
+            // Count only busboys with a name.
+            const activeBusboyCount = isBusboy
+              ? rows.filter((r) => r.name.trim() !== "").length
+              : 0;
 
-    const activeBusboyCount = isBusboy
-      ? rows.filter((r) => r.name.trim() !== "").length
-      : 0;
+            // Busboy floor tips are split by active busboys.
+            // Manager floor tips stay manual.
+            const floorTips =
+              isBusboy && activeBusboyCount > 0
+                ? floorTipPool / activeBusboyCount
+                : Number(row.floorTips || 0);
 
-    const floorTips =
-      isBusboy && activeBusboyCount > 0
-        ? floorTipPool / activeBusboyCount
-        : Number(row.floorTips || 0);
+                const cashTips =
+  isBusboy && activeBusboyCount > 0
+    ? cashTipPool / activeBusboyCount
+    : 0;
 
-    const totalTips =
-      Number(row.houseChargeTips || 0) +
-      Number(row.ccTips || 0) +
-      floorTips;
+            // Cash Tips is separate, not included here.
+            const totalTips =
+              Number(row.houseChargeTips || 0) +
+              Number(row.ccTips || 0) +
+              floorTips;
 
             return (
               <tr key={index}>
-                {(Object.keys(row) as Array<keyof TipRow>).map((field) => (
-                  <td key={field}>
-                    <input
-                      value={
-                        field === "floorTips" && isBusboy
-                          ? floorTips.toFixed(2)
-                          : field === "totalTips"
-                          ? totalTips.toFixed(2)
-                          : row[field]
-                      }
-                      readOnly={
-                        field === "totalTips" ||
-                        (field === "floorTips" && isBusboy)
-                      }
-                      onChange={(e) =>
-                        onChange(type, index, field, e.target.value)
-                      }
-                    />
-                  </td>
-                ))}
+              
+  
 
-                <td className="no-print">
-                  <button
-                    className="delete-btn"
-                    onClick={() => onRemove(index)}
-                  >
-                    ×
-                  </button>
-                </td>
+<td>
+  <input
+    value={row.name}
+    onChange={(e) =>
+      onChange(type, index, "name", e.target.value)
+    }
+  />
+</td>
+
+<td>
+  <input
+    value={row.houseChargeTips}
+    onChange={(e) =>
+      onChange(type, index, "houseChargeTips", e.target.value)
+    }
+  />
+</td>
+
+<td>
+  <input
+    value={row.ccTips}
+    onChange={(e) =>
+      onChange(type, index, "ccTips", e.target.value)
+    }
+  />
+</td>
+
+<td>
+  <input
+    value={
+      isBusboy ? floorTips.toFixed(2) : row.floorTips
+    }
+    readOnly={isBusboy}
+    onChange={(e) =>
+      onChange(type, index, "floorTips", e.target.value)
+    }
+  />
+</td>
+
+<td>
+  <input
+    value={totalTips.toFixed(2)}
+    readOnly
+  />
+</td>
+
+{isBusboy && (
+  <td>
+    <input
+      value={cashTips.toFixed(2)}
+      readOnly
+    />
+  </td>
+)}
+
+<td className="no-print">
+  <button
+    type="button"
+    className="delete-btn"
+    onClick={() => onRemove(index)}
+  >
+    ×
+  </button>
+</td>
+
+
               </tr>
             );
           })}

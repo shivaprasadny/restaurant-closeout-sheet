@@ -42,6 +42,7 @@ export type TipRow = {
   ccTips: string;
   floorTips: string;
   totalTips: string;
+  cashTips: string;
 };
 
 export type ExpenseRow = {

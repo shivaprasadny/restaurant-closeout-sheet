@@ -1,15 +1,41 @@
 import type { Dispatch, SetStateAction } from "react";
 import type { ServerRow } from "../types/closeout.types";
 import { emptyServer } from "../data/defaultRows";
+import {
+  calculateServerRow,
+  money,
+  num,
+} from "../utils/closeoutCalculations";
 
 /**
  * ServerTable
  * --------------------------------------------------
- * Reusable table for AM and PM server checkout.
+ * Reusable table for:
+ * - AM Server / Waiter Checkout
+ * - PM Server / Waiter Checkout
  *
- * Header includes:
- * - Tip Out % default 8
- * - Optional Bartender checkbox
+ * Manual fields:
+ * - Name
+ * - Total
+ * - Food
+ * - Alcohol
+ * - Tables
+ * - Guests
+ * - Average
+ * - CC Sale
+ * - Cash Sale
+ * - CC Tip
+ *
+ * Auto fields:
+ * - Server CC Tip
+ * - Server Cash Tip
+ * - BB CC Tip
+ * - BB Cash Tip
+ *
+ * Bartender controls:
+ * - Hidden in print
+ * - Tip Out % default comes from CloseoutPage
+ * - CC and Cash totals are calculated from all server rows
  */
 
 type ServerTableProps = {
@@ -17,11 +43,24 @@ type ServerTableProps = {
   rows: ServerRow[];
   setRows: Dispatch<SetStateAction<ServerRow[]>>;
 
+  /**
+   * Bartender tip-out percentage.
+   * Default should be 8 from CloseoutPage.
+   */
   tipOutPercent: string;
   onTipOutPercentChange: (value: string) => void;
 
+  /**
+   * If false, bartender calculation becomes 0.
+   */
   bartenderEnabled: boolean;
   onBartenderEnabledChange: (value: boolean) => void;
+
+  /**
+   * Busboy percentage comes from Busboy section.
+   * Default should be 23 from CloseoutPage.
+   */
+  busboyPercent: string;
 };
 
 export default function ServerTable({
@@ -32,7 +71,40 @@ export default function ServerTable({
   onTipOutPercentChange,
   bartenderEnabled,
   onBartenderEnabledChange,
+  busboyPercent,
 }: ServerTableProps) {
+  /**
+   * Convert percent strings to numbers.
+   */
+  const bartenderPercentNumber = num(tipOutPercent);
+  const busboyPercentNumber = num(busboyPercent);
+
+  /**
+   * Calculate bartender totals for the header.
+   */
+  const bartenderTotals = rows.reduce(
+    (totals, row) => {
+      const calculated = calculateServerRow(
+        row,
+        bartenderEnabled,
+        bartenderPercentNumber,
+        busboyPercentNumber
+      );
+
+      return {
+        cc: totals.cc + calculated.bartenderCc,
+        cash: totals.cash + calculated.bartenderCash,
+      };
+    },
+    {
+      cc: 0,
+      cash: 0,
+    }
+  );
+
+  /**
+   * Update only manual fields in a server row.
+   */
   function updateServer(index: number, field: keyof ServerRow, value: string) {
     setRows((prev) =>
       prev.map((row, i) =>
@@ -41,10 +113,16 @@ export default function ServerTable({
     );
   }
 
+  /**
+   * Add one blank server row.
+   */
   function addServer() {
     setRows((prev) => [...prev, { ...emptyServer }]);
   }
 
+  /**
+   * Delete one server row.
+   */
   function removeServer(index: number) {
     setRows((prev) => prev.filter((_, i) => i !== index));
   }
@@ -54,38 +132,34 @@ export default function ServerTable({
       <div className="section-title-row server-header-row">
         <h2>{title}</h2>
 
+        <div className="server-options no-print">
+          <label className="tip-percent-inline">
+            Tip Out %
+            <input
+              value={tipOutPercent}
+              onChange={(e) => onTipOutPercentChange(e.target.value)}
+            />
+          </label>
 
-<div className="server-options no-print">
-  <label className="tip-percent-inline">
-    Tip Out %
-    <input
-      value={tipOutPercent}
-      onChange={(e) => onTipOutPercentChange(e.target.value)}
-    />
-  </label>
+          <label className="bartender-tip-inline">
+            CC
+            <input value={money(bartenderTotals.cc)} readOnly />
+          </label>
 
-  {/* Bartender CC tip amount - calculated later */}
-  <label className="bartender-tip-inline">
-    CC
-    <input readOnly placeholder="0.00" />
-  </label>
+          <label className="bartender-tip-inline">
+            Cash
+            <input value={money(bartenderTotals.cash)} readOnly />
+          </label>
 
-  {/* Bartender cash tip amount - calculated later */}
-  <label className="bartender-tip-inline">
-    Cash
-    <input placeholder="0.00" />
-  </label>
-
-  <label className="bartender-check">
-    <input
-      type="checkbox"
-      checked={bartenderEnabled}
-      onChange={(e) => onBartenderEnabledChange(e.target.checked)}
-    />
-    Bartender
-  </label>
-</div>
-       
+          <label className="bartender-check">
+            <input
+              type="checkbox"
+              checked={bartenderEnabled}
+              onChange={(e) => onBartenderEnabledChange(e.target.checked)}
+            />
+            Bartender
+          </label>
+        </div>
 
         <button className="small-btn no-print" onClick={addServer}>
           + Add Server
@@ -114,29 +188,133 @@ export default function ServerTable({
         </thead>
 
         <tbody>
-          {rows.map((row, index) => (
-            <tr key={index}>
-              {(Object.keys(row) as Array<keyof ServerRow>).map((field) => (
-                <td key={field}>
+          {rows.map((row, index) => {
+            const calculated = calculateServerRow(
+              row,
+              bartenderEnabled,
+              bartenderPercentNumber,
+              busboyPercentNumber
+            );
+
+            return (
+              <tr key={index}>
+                <td>
                   <input
-                    value={row[field]}
+                    value={row.name}
                     onChange={(e) =>
-                      updateServer(index, field, e.target.value)
+                      updateServer(index, "name", e.target.value)
                     }
                   />
                 </td>
-              ))}
 
-              <td className="no-print">
-                <button
-                  className="delete-btn"
-                  onClick={() => removeServer(index)}
-                >
-                  ×
-                </button>
-              </td>
-            </tr>
-          ))}
+                <td>
+                  <input
+                    value={row.total}
+                    onChange={(e) =>
+                      updateServer(index, "total", e.target.value)
+                    }
+                  />
+                </td>
+
+                <td>
+                  <input
+                    value={row.food}
+                    onChange={(e) =>
+                      updateServer(index, "food", e.target.value)
+                    }
+                  />
+                </td>
+
+                <td>
+                  <input
+                    value={row.alcohol}
+                    onChange={(e) =>
+                      updateServer(index, "alcohol", e.target.value)
+                    }
+                  />
+                </td>
+
+                <td>
+                  <input
+                    value={row.tables}
+                    onChange={(e) =>
+                      updateServer(index, "tables", e.target.value)
+                    }
+                  />
+                </td>
+
+                <td>
+                  <input
+                    value={row.guests}
+                    onChange={(e) =>
+                      updateServer(index, "guests", e.target.value)
+                    }
+                  />
+                </td>
+
+                <td>
+                  <input
+                    value={row.average}
+                    onChange={(e) =>
+                      updateServer(index, "average", e.target.value)
+                    }
+                  />
+                </td>
+
+                <td>
+                  <input
+                    value={row.ccSales}
+                    onChange={(e) =>
+                      updateServer(index, "ccSales", e.target.value)
+                    }
+                  />
+                </td>
+
+                <td>
+                  <input
+                    value={row.cashSales}
+                    onChange={(e) =>
+                      updateServer(index, "cashSales", e.target.value)
+                    }
+                  />
+                </td>
+
+                <td>
+                  <input
+                    value={row.ccTips}
+                    onChange={(e) =>
+                      updateServer(index, "ccTips", e.target.value)
+                    }
+                  />
+                </td>
+
+                <td>
+                  <input value={money(calculated.serverCc)} readOnly />
+                </td>
+
+                <td>
+                  <input value={money(calculated.serverCash)} readOnly />
+                </td>
+
+                <td>
+                  <input value={money(calculated.bbCc)} readOnly />
+                </td>
+
+                <td>
+                  <input value={money(calculated.bbCash)} readOnly />
+                </td>
+
+                <td className="no-print">
+                  <button
+                    className="delete-btn"
+                    onClick={() => removeServer(index)}
+                  >
+                    ×
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </section>

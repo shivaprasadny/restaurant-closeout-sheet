@@ -111,3 +111,97 @@ export function getBusboyFloorTipTotal(
     0
   );
 }
+
+/**
+ * Remove NY sales tax.
+ */
+export function removeTax(amount: number): number {
+  return amount / 1.08875;
+}
+
+/**
+ * Estimate customer tip at 18%.
+ */
+export function estimateTip(amount: number): number {
+  return removeTax(amount) * 0.18;
+}
+
+/**
+ * Safe number.
+ */
+export function num(value: string): number {
+  return Number(value || 0);
+}
+
+
+/**
+ * Calculate all server tip fields.
+ */
+export function calculateServerRow(
+  row: ServerRow,
+  bartenderEnabled: boolean,
+  bartenderPercent: number,
+  busboyPercent: number
+) {
+  const ccSales = num(row.ccSales);
+  const cashSales = num(row.cashSales);
+  const ccTipEntered = num(row.ccTips);
+
+  const ccEstimatedTip = estimateTip(ccSales);
+  const cashEstimatedTip = estimateTip(cashSales);
+
+  const bartenderRate = bartenderEnabled
+    ? bartenderPercent / 100
+    : 0;
+
+  const busboyRate = busboyPercent / 100;
+
+  const bartenderCc =
+    ccEstimatedTip * bartenderRate;
+
+  const bartenderCash =
+    cashEstimatedTip * bartenderRate;
+
+  let bbCc =
+    ccEstimatedTip * busboyRate;
+
+  let bbCash =
+    cashEstimatedTip * busboyRate;
+
+  /**
+   * If BB CC exceeds entered CC tips,
+   * move difference to cash.
+   */
+  if (bbCc > ccTipEntered) {
+    const shortage = bbCc - ccTipEntered;
+
+    bbCc = ccTipEntered;
+    bbCash += shortage;
+  }
+
+  const serverCc =
+    Math.max(0, ccTipEntered - bbCc);
+
+  const totalEstimatedTip =
+    estimateTip(ccSales + cashSales);
+
+  const serverCash =
+    Math.max(
+      0,
+      totalEstimatedTip -
+        serverCc -
+        bbCc -
+        bbCash -
+        bartenderCc -
+        bartenderCash
+    );
+
+  return {
+    bartenderCc,
+    bartenderCash,
+    bbCc,
+    bbCash,
+    serverCc,
+    serverCash,
+  };
+}

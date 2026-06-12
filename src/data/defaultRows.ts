@@ -49,6 +49,7 @@ export const emptyTipRow: TipRow = {
   ccTips: "",
   floorTips: "",
   totalTips: "",
+  cashTips: "",
 };
 
 /**
@@ -125,4 +126,5 @@ export const emptyManagerTipRow: TipRow = {
   ccTips: "",
   floorTips: "0",
   totalTips: "",
+  cashTips:"",
 };

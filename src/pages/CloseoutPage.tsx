@@ -39,6 +39,8 @@ import {
   getExpenseTotal,
   getHouseChargeTotals,
   getServerTotal,
+  calculateServerRow,
+  num,
 } from "../utils/closeoutCalculations";
 
 
@@ -91,8 +93,8 @@ const [amBartenderEnabled, setAmBartenderEnabled] = useState(false);
 const [pmBartenderEnabled, setPmBartenderEnabled] = useState(false);
 
   
-  const [amBusboyPercent, setAmBusboyPercent] = useState("");
-  const [pmBusboyPercent, setPmBusboyPercent] = useState("");
+  const [amBusboyPercent, setAmBusboyPercent] = useState(" 23");
+  const [pmBusboyPercent, setPmBusboyPercent] = useState(" 23");
 
   const [amBusboys, setAmBusboys] = useState(
     makeRows(2, emptyTipRow)
@@ -186,6 +188,44 @@ const salesTotals = {
   pm: takeOutPM + pmServerTotal + pmHouseChargeBase,
   total: takeOutTotal + serverTotal + houseChargeTotal,
 };
+
+/* =========================
+   BUSBOY POOLS FROM SERVER SECTION
+========================= */
+
+const amBusboyPools = amServers.reduce(
+  (totals, row) => {
+    const calculated = calculateServerRow(
+      row,
+      amBartenderEnabled,
+      num(amServerTipOutPercent),
+      num(amBusboyPercent)
+    );
+
+    return {
+      cc: totals.cc + calculated.bbCc,
+      cash: totals.cash + calculated.bbCash,
+    };
+  },
+  { cc: 0, cash: 0 }
+);
+
+const pmBusboyPools = pmServers.reduce(
+  (totals, row) => {
+    const calculated = calculateServerRow(
+      row,
+      pmBartenderEnabled,
+      num(pmServerTipOutPercent),
+      num(pmBusboyPercent)
+    );
+
+    return {
+      cc: totals.cc + calculated.bbCc,
+      cash: totals.cash + calculated.bbCash,
+    };
+  },
+  { cc: 0, cash: 0 }
+);
 
 /* =========================
    DAY CLOSE OUT TOTALS
@@ -498,6 +538,7 @@ const cashToOffice =
   onTipOutPercentChange={setAmServerTipOutPercent}
   bartenderEnabled={amBartenderEnabled}
   onBartenderEnabledChange={setAmBartenderEnabled}
+  busboyPercent={amBusboyPercent}
 />
 
 <ServerTable
@@ -508,30 +549,34 @@ const cashToOffice =
   onTipOutPercentChange={setPmServerTipOutPercent}
   bartenderEnabled={pmBartenderEnabled}
   onBartenderEnabledChange={setPmBartenderEnabled}
+  busboyPercent={pmBusboyPercent}
 />
 
         <section className="two-column-grid">
           <TipTable
-            title="AM BUSBOY"
-            type="AM_BUSBOY"
-            rows={amBusboys}
-            percent={amBusboyPercent}
-            onPercentChange={setAmBusboyPercent}
-            onAdd={() => addTipRow("AM_BUSBOY")}
-            onRemove={(index) => removeTipRow("AM_BUSBOY", index)}
-            onChange={updateTipRow}
-          />
-
-          <TipTable
-            title="PM BUSBOY"
-            type="PM_BUSBOY"
-            rows={pmBusboys}
-            percent={pmBusboyPercent}
-            onPercentChange={setPmBusboyPercent}
-            onAdd={() => addTipRow("PM_BUSBOY")}
-            onRemove={(index) => removeTipRow("PM_BUSBOY", index)}
-            onChange={updateTipRow}
-          />
+  title="AM BUSBOY"
+  type="AM_BUSBOY"
+  rows={amBusboys}
+  percent={amBusboyPercent}
+  floorTipPool={amBusboyPools.cc}
+  cashTipPool={amBusboyPools.cash}
+  onPercentChange={setAmBusboyPercent}
+  onAdd={() => addTipRow("AM_BUSBOY")}
+  onRemove={(index) => removeTipRow("AM_BUSBOY", index)}
+  onChange={updateTipRow}
+/>
+<TipTable
+  title="PM BUSBOY"
+  type="PM_BUSBOY"
+  rows={pmBusboys}
+  percent={pmBusboyPercent}
+  floorTipPool={pmBusboyPools.cc}
+  cashTipPool={pmBusboyPools.cash}
+  onPercentChange={setPmBusboyPercent}
+  onAdd={() => addTipRow("PM_BUSBOY")}
+  onRemove={(index) => removeTipRow("PM_BUSBOY", index)}
+  onChange={updateTipRow}
+/>
         </section>
 
         <section className="two-column-grid">
