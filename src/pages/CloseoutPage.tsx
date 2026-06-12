@@ -58,8 +58,8 @@ export default function CloseoutPage() {
   /* =========================
      HEADER STATE
   ========================= */
-
-  const [header, setHeader] = useState<HeaderData>({
+const [header, setHeader] = useState<HeaderData>({
+  restaurantName: "",
   locationName: "",
   date: today,
   day: new Date()
@@ -544,7 +544,31 @@ const cashToOffice =
 
       {/* PAGE 1 */}
       <main className="sheet">
-        <div className="top-title">DAILY CLOSE OUT SHEET</div>
+
+
+
+<div className="top-title title-with-restaurant">
+  <div className="restaurant-title-field no-print">
+    <input
+      list="restaurant-list"
+      value={header.restaurantName}
+      placeholder="Restaurant Name"
+      onChange={(e) =>
+        updateHeader("restaurantName", e.target.value)
+      }
+    />
+
+    <datalist id="restaurant-list">
+      <option value="DON GIOVANNI" />
+    </datalist>
+  </div>
+
+  <div className="print-restaurant-name">
+    {header.restaurantName}
+  </div>
+
+  <div>DAILY CLOSE OUT SHEET</div>
+</div>
 
         
 

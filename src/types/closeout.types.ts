@@ -2,8 +2,8 @@
  * All TypeScript types for Restaurant Close-Out app.
  * Keeping types here makes components cleaner.
  */
-
 export type HeaderData = {
+  restaurantName: string;
   locationName: string;
   date: string;
   day: string;

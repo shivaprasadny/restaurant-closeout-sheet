@@ -205,3 +205,12 @@ export function calculateServerRow(
     serverCash,
   };
 }
+export type HeaderData = {
+  restaurantName: string;
+  locationName: string;
+  date: string;
+  day: string;
+  weather: string;
+  managerAm: string;
+  managerPm: string;
+};
