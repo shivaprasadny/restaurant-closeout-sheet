@@ -116,17 +116,33 @@ export default function ServerTable({
       };
 
       const total = Number(updatedRow.total || 0);
+      const food = Number(updatedRow.food || 0);
+      const alcohol = Number(updatedRow.alcohol || 0);
       const ccSale = Number(updatedRow.ccSales || 0);
       const cashSale = Number(updatedRow.cashSales || 0);
+      const guests = Number(updatedRow.guests || 0);
 
-      // If manager changes CC Sale, auto-fill Cash Sale
+      // Food + Alcohol = Total
+      if (field === "food" && total > 0) {
+        updatedRow.alcohol = Math.max(0, total - food).toFixed(2);
+      }
+
+      if (field === "alcohol" && total > 0) {
+        updatedRow.food = Math.max(0, total - alcohol).toFixed(2);
+      }
+
+      // CC Sale + Cash Sale = Total
       if (field === "ccSales" && total > 0) {
         updatedRow.cashSales = Math.max(0, total - ccSale).toFixed(2);
       }
 
-      // If manager changes Cash Sale, auto-fill CC Sale
       if (field === "cashSales" && total > 0) {
         updatedRow.ccSales = Math.max(0, total - cashSale).toFixed(2);
+      }
+
+      // Average = Total / Guests
+      if ((field === "total" || field === "guests") && guests > 0) {
+        updatedRow.average = (total / guests).toFixed(2);
       }
 
       return updatedRow;
@@ -274,13 +290,14 @@ export default function ServerTable({
                 </td>
 
                 <td>
-                  <input
-                    value={row.average}
-                    onChange={(e) =>
-                      updateServer(index, "average", e.target.value)
-                    }
-                  />
-                </td>
+  <input
+    className="avg-input"
+    value={row.average}
+    onChange={(e) =>
+      updateServer(index, "average", e.target.value)
+    }
+  />
+</td>
 
                 <td>
                   <input

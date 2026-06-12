@@ -376,6 +376,7 @@ select {
   font-weight: bold;
   text-align: center;
 }
+
 /* Print-only settings */
 @media print {
   /* White paper background */
