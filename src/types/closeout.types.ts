@@ -64,6 +64,7 @@ export type HouseChargeRow = {
   baseTotal: string;
   tips: string;
   grandTotal: string;
+  lastEditedAmount: "baseTotal" | "grandTotal" | "";
 };
 
 export type CheckLogRow = {

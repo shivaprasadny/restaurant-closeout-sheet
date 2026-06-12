@@ -72,6 +72,7 @@ export const emptyHouseCharge: HouseChargeRow = {
   baseTotal: "",
   tips: "",
   grandTotal: "",
+  lastEditedAmount: "",
 };
 
 /**

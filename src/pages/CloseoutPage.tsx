@@ -476,20 +476,43 @@ const cashToOffice =
     setter((prev) => prev.filter((_, i) => i !== index));
   }
 
-  function updateHouseCharge(
-    shift: "AM" | "PM",
-    index: number,
-    field: keyof HouseChargeRow,
-    value: string
-  ) {
-    const setter = shift === "AM" ? setAmHouseCharges : setPmHouseCharges;
+function updateHouseCharge(
+  shift: "AM" | "PM",
+  index: number,
+  field: keyof HouseChargeRow,
+  value: string
+) {
+  const setter = shift === "AM" ? setAmHouseCharges : setPmHouseCharges;
 
-    setter((prev) =>
-      prev.map((row, i) =>
-        i === index ? { ...row, [field]: value } : row
-      )
-    );
-  }
+  setter((prev) =>
+    prev.map((row, i) => {
+      if (i !== index) return row;
+
+      const updated: HouseChargeRow = {
+        ...row,
+        [field]: value,
+      };
+
+      if (field === "baseTotal" || field === "grandTotal") {
+        updated.lastEditedAmount = field;
+      }
+
+      const base = Number(updated.baseTotal || 0);
+      const tips = Number(updated.tips || 0);
+      const grand = Number(updated.grandTotal || 0);
+
+      if (updated.lastEditedAmount === "baseTotal") {
+        updated.grandTotal = (base + tips).toFixed(2);
+      }
+
+      if (updated.lastEditedAmount === "grandTotal") {
+        updated.baseTotal = Math.max(0, grand - tips).toFixed(2);
+      }
+
+      return updated;
+    })
+  );
+}
 
   function addHouseCharge(shift: "AM" | "PM") {
     const setter = shift === "AM" ? setAmHouseCharges : setPmHouseCharges;

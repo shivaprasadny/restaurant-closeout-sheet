@@ -103,11 +103,13 @@ export default function HouseChargeTable({
               </td>
 
               <td>
-               <input
-  value={money(Number(row.baseTotal || 0) + Number(row.tips || 0))}
-  readOnly
-/>
-              </td>
+  <input
+    value={row.grandTotal}
+    onChange={(e) =>
+      onChange(shift, index, "grandTotal", e.target.value)
+    }
+  />
+</td>
 
               <td className="no-print">
                 <button
