@@ -1,0 +1,439 @@
+/* Makes padding/borders included inside element width */
+* {
+  box-sizing: border-box;
+}
+
+/* Main browser page background */
+body {
+  margin: 0;
+  background: #e5e5e5;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Top app header - hidden during print */
+.app-header {
+  padding: 14px 24px;
+  background: #111827;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* App header title */
+.app-header h1 {
+  font-size: 20px;
+  margin: 0;
+}
+
+/* Main buttons */
+button {
+  background: #d97706;
+  border: none;
+  color: white;
+  padding: 9px 14px;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* Small add buttons */
+.small-btn {
+  font-size: 11px;
+  padding: 4px 8px;
+}
+
+/* Delete row button */
+.delete-btn {
+  background: #991b1b;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 10px;
+}
+
+/* Each paper page */
+.sheet {
+  width: 11in;
+  min-height: 8.5in;
+  background: white;
+  margin: 18px auto;
+  padding: 8px;
+  border: 2px solid black;
+}
+
+/* Page main title */
+.top-title {
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  border: 2px solid black;
+  padding: 5px;
+  margin-bottom: 6px;
+  letter-spacing: 1px;
+}
+
+/* Header input row */
+.info-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;
+  gap: 5px;
+  margin-bottom: 6px;
+}
+
+/* Labels above inputs */
+label {
+  font-size: 13px;
+  font-weight: bold;
+}
+
+/* All normal inputs */
+input {
+  width: 100%;
+  border: 1px solid black;
+  height: 23px;
+  padding: 2px 3px;
+  font-size: 13px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Top sales + closeout layout */
+.top-section-grid {
+  display: grid;
+  grid-template-columns: 1.05fr 1.7fr;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+/* Two side-by-side sections */
+.two-column-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+/* Section box border */
+.box {
+  border: 2px solid black;
+  padding: 5px;
+}
+
+/* Small space under sections */
+.compact-section {
+  margin-bottom: 6px;
+}
+
+/* Section title row with add button */
+.section-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+/* Section title text */
+.box h2 {
+  font-size: 15px;
+  text-align: center;
+  margin: 0;
+  font-weight: bold;
+}
+
+/* All tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+/* Table cells */
+th,
+td {
+  border: 1px solid black;
+  padding: 2px;
+  font-size: 12px;
+  height: 23px;
+  text-align: center;
+}
+
+/* Table headers */
+th {
+  font-weight: bold;
+  background: #f3f4f6;
+}
+
+/* Inputs inside table cells */
+td input {
+  border: none;
+  height: 20px;
+  font-size: 13px;
+  text-align: center;
+  padding: 1px;
+}
+
+/* Server table has many columns, so slightly smaller */
+.server-table th,
+.server-table td {
+  font-size: 10px;
+}
+
+/* Server table input text */
+.server-table td input {
+  font-size: 11px;
+}
+
+/* Server name column wider */
+.server-table th:first-child,
+.server-table td:first-child {
+  width: 78px;
+}
+
+/* Tables, guests, average columns smaller */
+.server-table th:nth-child(5),
+.server-table td:nth-child(5),
+.server-table th:nth-child(6),
+.server-table td:nth-child(6),
+.server-table th:nth-child(7),
+.server-table td:nth-child(7) {
+  width: 38px;
+}
+
+/* Day closeout input grid */
+.closeout-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 5px;
+}
+
+/* Busboy tip percentage row */
+.percent-row {
+  display: grid;
+  grid-template-columns: 75px 1fr;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+/* Page break before second printed page */
+.page-break {
+  page-break-before: always;
+  break-before: page;
+}
+
+/* Header action buttons */
+.app-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Email button looks like normal button */
+.email-btn {
+  background: #2563eb;
+  color: white;
+  text-decoration: none;
+  padding: 9px 14px;
+  font-weight: bold;
+  border-radius: 6px;
+}
+/* Total rows */
+.total-row {
+  font-weight: bold;
+  background: #f3f4f6;
+}
+
+/* Busboy Tip Out % inline with section title */
+.tip-percent-inline {
+  display: grid;
+  grid-template-columns: 60px 55px;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  margin: 0;
+}
+
+/* Small input for busboy percent */
+.tip-percent-inline input {
+  height: 18px;
+  font-size: 11px;
+  padding: 1px;
+}
+/* Notes box inside Day Close Out */
+.closeout-notes {
+  width: 200%;
+  height: 48px;
+  border: 1px solid black;
+  padding: 4px;
+  font-size: 12px;
+  font-family: Arial, Helvetica, sans-serif;
+  resize: none;
+}
+/* Server header with tip percent and bartender checkbox */
+.server-header-row {
+  gap: 8px;
+}
+
+/* Bartender checkbox label */
+.bartender-check {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+/* Checkbox should not stretch like normal input */
+.bartender-check input {
+  width: auto;
+  height: auto;
+}
+
+/* Print label for bartender yes/no */
+.bartender-print-label {
+  font-size: 11px;
+  font-weight: bold;
+}
+/* Hide server options in print */
+.server-options {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.server-options {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tip-percent-input {
+  width: 50px;
+}
+
+.tip-total-input {
+  width: 80px;
+  text-align: center;
+  font-weight: bold;
+}
+/* Small bartender tip input group */
+.bartender-tip-inline {
+  display: grid;
+  grid-template-columns: 30px 65px;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  margin: 0;
+}
+
+/* Bartender CC/Cash inputs */
+.bartender-tip-inline input {
+  height: 18px;
+  font-size: 11px;
+  padding: 1px;
+  text-align: center;
+}
+/* Print-only settings */
+@media print {
+  /* White paper background */
+  body {
+    background: white;
+  }
+
+  /* Hide buttons and app header in print */
+  .no-print {
+    display: none !important;
+  }
+
+  /* Printed paper safe area */
+  .sheet {
+    margin: 0;
+    width: 10.7in;
+    height: 8.2in;
+    min-height: 8.2in;
+    padding: 6px;
+    border: 2px solid black;
+    overflow: hidden;
+  }
+  .server-options {
+    display: none !important;
+  }
+
+  /* Print page title */
+  .top-title {
+    font-size: 22px;
+    padding: 4px;
+    margin-bottom: 5px;
+  }
+
+  /* Print labels */
+  label {
+    font-size: 12px;
+  }
+
+  /* Print normal input text */
+  input {
+    border: none;
+    height: 22px;
+    font-size: 12px;
+  }
+
+  /* Print section title */
+  .box h2 {
+    font-size: 13px;
+  }
+
+  /* Print table cells */
+  th,
+  td {
+    font-size: 11px;
+    height: 22px;
+    padding: 1.5px;
+  }
+
+  /* Print table input text */
+  td input {
+    font-size: 12px;
+    height: 20px;
+  }
+
+  /* Print server table headers/cells */
+  .server-table th,
+  .server-table td {
+    font-size: 9.5px;
+  }
+
+  /* Print server input values */
+  .server-table td input {
+    font-size: 10.5px;
+  }
+
+  /* Keep print clean black/white */
+  th {
+    background: white;
+  }
+
+  /* Page 2 starts on new page */
+  .page-break {
+    page-break-before: always;
+    break-before: page;
+  }
+
+  /* Print: keep tip percent compact */
+.tip-percent-inline {
+  grid-template-columns: 58px 50px;
+  font-size: 10px;
+}
+
+.tip-percent-inline input {
+  height: 17px;
+  font-size: 10px;
+}
+.closeout-notes {
+  height: 42px;
+  font-size: 11px;
+}
+
+  /* US letter landscape */
+  @page {
+    size: letter landscape;
+    margin: 0.15in;
+  }
+}
