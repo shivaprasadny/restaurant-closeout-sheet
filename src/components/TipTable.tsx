@@ -34,6 +34,8 @@ type Props = {
   percent?: string;
   floorTipPool?: number;
   cashTipPool?: number;
+  autoSplit?: boolean;
+onAutoSplitChange?: (value: boolean) => void;
   onPercentChange?: (value: string) => void;
   onAdd: () => void;
   onRemove: (index: number) => void;
@@ -53,9 +55,12 @@ export default function TipTable({
   floorTipPool = 0,
   cashTipPool = 0,
   onPercentChange,
+  autoSplit = true,
+onAutoSplitChange,
   onAdd,
   onRemove,
   onChange,
+  
 }: Props) {
   const isBusboy = type === "AM_BUSBOY" || type === "PM_BUSBOY";
 
@@ -73,6 +78,18 @@ export default function TipTable({
             />
           </label>
         )}
+        {isBusboy && onAutoSplitChange && (
+ <label className="tip-percent-inline no-print">
+  <input
+    type="checkbox"
+    checked={autoSplit}
+    onChange={(e) =>
+      onAutoSplitChange?.(e.target.checked)
+    }
+  />
+  Auto Split
+</label>
+)}
 
         <button className="small-btn no-print" onClick={onAdd}>
           + Add
@@ -103,14 +120,22 @@ export default function TipTable({
 
             // Busboy floor tips are split by active busboys.
             // Manager floor tips stay manual.
-            const floorTips =
-              isBusboy && activeBusboyCount > 0
-                ? floorTipPool / activeBusboyCount
-                : Number(row.floorTips || 0);
+           const floorTips =
+  isBusboy
+    ? autoSplit
+      ? activeBusboyCount > 0
+        ? floorTipPool / activeBusboyCount
+        : 0
+      : Number(row.floorTips || 0)
+    : Number(row.floorTips || 0);
 
-                const cashTips =
-  isBusboy && activeBusboyCount > 0
-    ? cashTipPool / activeBusboyCount
+               const cashTips =
+  isBusboy
+    ? autoSplit
+      ? activeBusboyCount > 0
+        ? cashTipPool / activeBusboyCount
+        : 0
+      : Number(row.cashTips || 0)
     : 0;
 
             // Cash Tips is separate, not included here.
@@ -156,7 +181,7 @@ export default function TipTable({
     value={
       isBusboy ? floorTips.toFixed(2) : row.floorTips
     }
-    readOnly={isBusboy}
+  readOnly={isBusboy && autoSplit}
     onChange={(e) =>
       onChange(type, index, "floorTips", e.target.value)
     }
@@ -173,12 +198,23 @@ export default function TipTable({
 {isBusboy && (
   <td>
     <input
-      value={cashTips.toFixed(2)}
-      readOnly
+      value={
+        autoSplit
+          ? cashTips.toFixed(2)
+          : row.cashTips
+      }
+      readOnly={autoSplit}
+      onChange={(e) =>
+        onChange(
+          type,
+          index,
+          "cashTips",
+          e.target.value
+        )
+      }
     />
   </td>
 )}
-
 <td className="no-print">
   <button
     type="button"

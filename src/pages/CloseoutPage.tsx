@@ -129,6 +129,9 @@ const [pmManagers, setPmManagers] = useState(
     makeRows(4, emptyExpense)
   );
 
+  const [amAutoSplitBusboy, setAmAutoSplitBusboy] = useState(true);
+const [pmAutoSplitBusboy, setPmAutoSplitBusboy] = useState(true);
+
   const [amHouseCharges, setAmHouseCharges] = useState<HouseChargeRow[]>(
     defaultHouseChargeNames.map((name) => ({
       ...emptyHouseCharge,
@@ -190,6 +193,8 @@ const [pmManagers, setPmManagers] = useState(
   setAmBartenderEnabled(data.amBartenderEnabled ?? false);
   setPmBartenderEnabled(data.pmBartenderEnabled ?? false);
   setLoadedFromStorage(true);
+  setAmBartenderEnabled(data.amBartenderEnabled ?? false);
+setPmBartenderEnabled(data.pmBartenderEnabled ?? false);
 }, []);
 
 
@@ -223,6 +228,8 @@ useEffect(() => {
     pmServerTipOutPercent,
     amBartenderEnabled,
     pmBartenderEnabled,
+    amAutoSplitBusboy,
+pmAutoSplitBusboy,
   };
 
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
@@ -331,6 +338,8 @@ const pmBusboyPools = pmServers.reduce(
   },
   { cc: 0, cash: 0 }
 );
+
+
 
 /* =========================
    DAY CLOSE OUT TOTALS
@@ -510,10 +519,7 @@ const cashToOffice =
   }
 
 
-  function resetCloseout() {
-  localStorage.removeItem(STORAGE_KEY);
-  window.location.reload();
-}
+
   /* =========================
      JSX
   ========================= */
@@ -631,11 +637,14 @@ const cashToOffice =
   percent={amBusboyPercent}
   floorTipPool={amBusboyPools.cc}
   cashTipPool={amBusboyPools.cash}
+  autoSplit={amAutoSplitBusboy}
+  onAutoSplitChange={setAmAutoSplitBusboy}
   onPercentChange={setAmBusboyPercent}
   onAdd={() => addTipRow("AM_BUSBOY")}
   onRemove={(index) => removeTipRow("AM_BUSBOY", index)}
   onChange={updateTipRow}
 />
+
 <TipTable
   title="PM BUSBOY"
   type="PM_BUSBOY"
@@ -643,6 +652,8 @@ const cashToOffice =
   percent={pmBusboyPercent}
   floorTipPool={pmBusboyPools.cc}
   cashTipPool={pmBusboyPools.cash}
+  autoSplit={pmAutoSplitBusboy}
+  onAutoSplitChange={setPmAutoSplitBusboy}
   onPercentChange={setPmBusboyPercent}
   onAdd={() => addTipRow("PM_BUSBOY")}
   onRemove={(index) => removeTipRow("PM_BUSBOY", index)}
