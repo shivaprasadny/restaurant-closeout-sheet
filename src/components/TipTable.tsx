@@ -120,19 +120,21 @@ onAutoSplitChange,
 
             // Busboy floor tips are split by active busboys.
             // Manager floor tips stay manual.
-           const floorTips =
+          const floorTips =
   isBusboy
     ? autoSplit
-      ? activeBusboyCount > 0
+      ? row.name.trim() !== "" && activeBusboyCount > 0
         ? floorTipPool / activeBusboyCount
         : 0
       : Number(row.floorTips || 0)
     : Number(row.floorTips || 0);
 
-               const cashTips =
+
+
+              const cashTips =
   isBusboy
     ? autoSplit
-      ? activeBusboyCount > 0
+      ? row.name.trim() !== "" && activeBusboyCount > 0
         ? cashTipPool / activeBusboyCount
         : 0
       : Number(row.cashTips || 0)
