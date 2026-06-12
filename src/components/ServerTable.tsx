@@ -106,12 +106,33 @@ export default function ServerTable({
    * Update only manual fields in a server row.
    */
   function updateServer(index: number, field: keyof ServerRow, value: string) {
-    setRows((prev) =>
-      prev.map((row, i) =>
-        i === index ? { ...row, [field]: value } : row
-      )
-    );
-  }
+  setRows((prev) =>
+    prev.map((row, i) => {
+      if (i !== index) return row;
+
+      const updatedRow = {
+        ...row,
+        [field]: value,
+      };
+
+      const total = Number(updatedRow.total || 0);
+      const ccSale = Number(updatedRow.ccSales || 0);
+      const cashSale = Number(updatedRow.cashSales || 0);
+
+      // If manager changes CC Sale, auto-fill Cash Sale
+      if (field === "ccSales" && total > 0) {
+        updatedRow.cashSales = Math.max(0, total - ccSale).toFixed(2);
+      }
+
+      // If manager changes Cash Sale, auto-fill CC Sale
+      if (field === "cashSales" && total > 0) {
+        updatedRow.ccSales = Math.max(0, total - cashSale).toFixed(2);
+      }
+
+      return updatedRow;
+    })
+  );
+}
 
   /**
    * Add one blank server row.

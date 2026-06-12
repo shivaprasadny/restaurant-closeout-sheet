@@ -156,56 +156,58 @@ const [pmAutoSplitBusboy, setPmAutoSplitBusboy] = useState(true);
 
 
 
-
-
-
-
-
-
-
-  useEffect(() => {
+useEffect(() => {
   const saved = localStorage.getItem(STORAGE_KEY);
 
-  if (!saved) return;
+  if (!saved) {
+    setLoadedFromStorage(true);
+    return;
+  }
 
   const data = JSON.parse(saved);
 
   setHeader(data.header ?? header);
   setSalesRows(data.salesRows ?? defaultSalesRows);
   setCloseOutRows(data.closeOutRows ?? defaultCloseOutRows);
+
   setAmServers(data.amServers ?? makeRows(2, emptyServer));
   setPmServers(data.pmServers ?? makeRows(2, emptyServer));
+
   setAmBusboys(data.amBusboys ?? makeRows(2, emptyTipRow));
   setPmBusboys(data.pmBusboys ?? makeRows(2, emptyTipRow));
+
   setAmManagers(data.amManagers ?? makeRows(1, emptyManagerTipRow));
   setPmManagers(data.pmManagers ?? makeRows(1, emptyManagerTipRow));
+
   setAmExpenses(data.amExpenses ?? makeRows(4, emptyExpense));
   setPmExpenses(data.pmExpenses ?? makeRows(4, emptyExpense));
+
   setAmHouseCharges(data.amHouseCharges ?? amHouseCharges);
   setPmHouseCharges(data.pmHouseCharges ?? pmHouseCharges);
+
   setAmCheckLogs(data.amCheckLogs ?? makeRows(4, emptyCheckLog));
   setPmCheckLogs(data.pmCheckLogs ?? makeRows(4, emptyCheckLog));
 
   setAmBusboyPercent(data.amBusboyPercent ?? "23");
   setPmBusboyPercent(data.pmBusboyPercent ?? "23");
+
   setAmServerTipOutPercent(data.amServerTipOutPercent ?? "8");
   setPmServerTipOutPercent(data.pmServerTipOutPercent ?? "8");
+
   setAmBartenderEnabled(data.amBartenderEnabled ?? false);
   setPmBartenderEnabled(data.pmBartenderEnabled ?? false);
+
+  setAmAutoSplitBusboy(data.amAutoSplitBusboy ?? true);
+  setPmAutoSplitBusboy(data.pmAutoSplitBusboy ?? true);
+
   setLoadedFromStorage(true);
-  setAmBartenderEnabled(data.amBartenderEnabled ?? false);
-setPmBartenderEnabled(data.pmBartenderEnabled ?? false);
 }, []);
 
 
 
-
-
-
-
 useEffect(() => {
+  if (!loadedFromStorage) return;
 
-    if (!loadedFromStorage) return;
   const data = {
     header,
     salesRows,
@@ -229,11 +231,12 @@ useEffect(() => {
     amBartenderEnabled,
     pmBartenderEnabled,
     amAutoSplitBusboy,
-pmAutoSplitBusboy,
+    pmAutoSplitBusboy,
   };
 
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }, [
+  loadedFromStorage,
   header,
   salesRows,
   closeOutRows,
@@ -255,7 +258,12 @@ pmAutoSplitBusboy,
   pmServerTipOutPercent,
   amBartenderEnabled,
   pmBartenderEnabled,
+  amAutoSplitBusboy,
+  pmAutoSplitBusboy,
 ]);
+
+
+
   /* =========================
      CALCULATED TOTALS
   ========================= */
