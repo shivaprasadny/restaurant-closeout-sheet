@@ -39,7 +39,6 @@ import {
   getExpenseTotal,
   getHouseChargeTotals,
   getServerTotal,
-  getBusboyFloorTipTotal,
 } from "../utils/closeoutCalculations";
 
 
@@ -180,11 +179,6 @@ const pmHouseChargeBase = pmHouseChargeTotals.baseTotal;
 const houseChargeTotal = totalHouseChargeBase;
 
 
-const amBusboyFloorTotal =
-  getBusboyFloorTipTotal(amServers);
-
-const pmBusboyFloorTotal =
-  getBusboyFloorTipTotal(pmServers);
 
 // Final AM / PM Sales totals.
 const salesTotals = {

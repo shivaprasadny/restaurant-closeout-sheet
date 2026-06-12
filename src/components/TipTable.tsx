@@ -60,8 +60,7 @@ export default function TipTable({
    * If this is busboy table, divide the server BB CC pool
    * by number of busboys.
    */
-  const busboyFloorTipPerPerson =
-    isBusboy && rows.length > 0 ? floorTipPool / rows.length : 0;
+
 
   return (
     <div className="box compact-section">
