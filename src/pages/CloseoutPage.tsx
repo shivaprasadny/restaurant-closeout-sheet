@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import "../index.css";
 
 /**
@@ -49,20 +49,26 @@ import TipTable from "../components/TipTable";
 import ExpenseTable from "../components/ExpenseTable";
 import HouseChargeTable from "../components/HouseChargeTable";
 import CheckLogTable from "../components/CheckLogTable";
+import HeaderSection from "../components/HeaderSection";
 
 export default function CloseoutPage() {
+
+    const STORAGE_KEY = "restaurant-closeout-draft-v1";
+    const today = new Date().toISOString().split("T")[0];
   /* =========================
      HEADER STATE
   ========================= */
 
   const [header, setHeader] = useState<HeaderData>({
-    locationName: "",
-    date: "",
-    day: "",
-    weather: "",
-    managerAm: "",
-    managerPm: "",
-  });
+  locationName: "",
+  date: today,
+  day: new Date()
+    .toLocaleDateString("en-US", { weekday: "long" })
+    .toUpperCase(),
+  weather: "",
+  managerAm: "",
+  managerPm: "",
+});
 
   /* =========================
      PAGE 1 STATE
@@ -82,6 +88,8 @@ export default function CloseoutPage() {
     makeRows(2, emptyServer)
   );
 
+
+const [loadedFromStorage, setLoadedFromStorage] = useState(false);
 // Server tip out percent for bar/bartender.
 // Default is 8%, user can change it.
 const [amServerTipOutPercent, setAmServerTipOutPercent] = useState("8");
@@ -93,9 +101,8 @@ const [amBartenderEnabled, setAmBartenderEnabled] = useState(false);
 const [pmBartenderEnabled, setPmBartenderEnabled] = useState(false);
 
   
-  const [amBusboyPercent, setAmBusboyPercent] = useState(" 23");
-  const [pmBusboyPercent, setPmBusboyPercent] = useState(" 23");
-
+ const [amBusboyPercent, setAmBusboyPercent] = useState("23");
+const [pmBusboyPercent, setPmBusboyPercent] = useState("23");
   const [amBusboys, setAmBusboys] = useState(
     makeRows(2, emptyTipRow)
   );
@@ -144,6 +151,104 @@ const [pmManagers, setPmManagers] = useState(
     makeRows(4, emptyCheckLog)
   );
 
+
+
+
+
+
+
+
+
+
+  useEffect(() => {
+  const saved = localStorage.getItem(STORAGE_KEY);
+
+  if (!saved) return;
+
+  const data = JSON.parse(saved);
+
+  setHeader(data.header ?? header);
+  setSalesRows(data.salesRows ?? defaultSalesRows);
+  setCloseOutRows(data.closeOutRows ?? defaultCloseOutRows);
+  setAmServers(data.amServers ?? makeRows(2, emptyServer));
+  setPmServers(data.pmServers ?? makeRows(2, emptyServer));
+  setAmBusboys(data.amBusboys ?? makeRows(2, emptyTipRow));
+  setPmBusboys(data.pmBusboys ?? makeRows(2, emptyTipRow));
+  setAmManagers(data.amManagers ?? makeRows(1, emptyManagerTipRow));
+  setPmManagers(data.pmManagers ?? makeRows(1, emptyManagerTipRow));
+  setAmExpenses(data.amExpenses ?? makeRows(4, emptyExpense));
+  setPmExpenses(data.pmExpenses ?? makeRows(4, emptyExpense));
+  setAmHouseCharges(data.amHouseCharges ?? amHouseCharges);
+  setPmHouseCharges(data.pmHouseCharges ?? pmHouseCharges);
+  setAmCheckLogs(data.amCheckLogs ?? makeRows(4, emptyCheckLog));
+  setPmCheckLogs(data.pmCheckLogs ?? makeRows(4, emptyCheckLog));
+
+  setAmBusboyPercent(data.amBusboyPercent ?? "23");
+  setPmBusboyPercent(data.pmBusboyPercent ?? "23");
+  setAmServerTipOutPercent(data.amServerTipOutPercent ?? "8");
+  setPmServerTipOutPercent(data.pmServerTipOutPercent ?? "8");
+  setAmBartenderEnabled(data.amBartenderEnabled ?? false);
+  setPmBartenderEnabled(data.pmBartenderEnabled ?? false);
+  setLoadedFromStorage(true);
+}, []);
+
+
+
+
+
+
+
+useEffect(() => {
+
+    if (!loadedFromStorage) return;
+  const data = {
+    header,
+    salesRows,
+    closeOutRows,
+    amServers,
+    pmServers,
+    amBusboys,
+    pmBusboys,
+    amManagers,
+    pmManagers,
+    amExpenses,
+    pmExpenses,
+    amHouseCharges,
+    pmHouseCharges,
+    amCheckLogs,
+    pmCheckLogs,
+    amBusboyPercent,
+    pmBusboyPercent,
+    amServerTipOutPercent,
+    pmServerTipOutPercent,
+    amBartenderEnabled,
+    pmBartenderEnabled,
+  };
+
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}, [
+  header,
+  salesRows,
+  closeOutRows,
+  amServers,
+  pmServers,
+  amBusboys,
+  pmBusboys,
+  amManagers,
+  pmManagers,
+  amExpenses,
+  pmExpenses,
+  amHouseCharges,
+  pmHouseCharges,
+  amCheckLogs,
+  pmCheckLogs,
+  amBusboyPercent,
+  pmBusboyPercent,
+  amServerTipOutPercent,
+  pmServerTipOutPercent,
+  amBartenderEnabled,
+  pmBartenderEnabled,
+]);
   /* =========================
      CALCULATED TOTALS
   ========================= */
@@ -404,70 +509,36 @@ const cashToOffice =
     setter((prev) => prev.filter((_, i) => i !== index));
   }
 
+
+  function resetCloseout() {
+  localStorage.removeItem(STORAGE_KEY);
+  window.location.reload();
+}
   /* =========================
      JSX
   ========================= */
 
   return (
     <div>
-      <div className="no-print app-header">
-        <h1>Restaurant Close-Out Sheet</h1>
-        <button onClick={() => window.print()}>Print Close-Out Sheet</button>
-      </div>
+     <div className="no-print app-header">
+  <h1>Restaurant Close-Out Sheet</h1>
+
+  <div className="app-actions">
+    <button onClick={() => window.print()}>Print Close-Out Sheet</button>
+  </div>
+</div>
 
       {/* PAGE 1 */}
       <main className="sheet">
         <div className="top-title">DAILY CLOSE OUT SHEET</div>
 
-        <section className="info-grid">
-          <label>
-            Location
-            <input
-              value={header.locationName}
-              onChange={(e) => updateHeader("locationName", e.target.value)}
-            />
-          </label>
+        
 
-          <label>
-            Date
-            <input
-              value={header.date}
-              onChange={(e) => updateHeader("date", e.target.value)}
-            />
-          </label>
+<HeaderSection
+  header={header}
+  onChange={updateHeader}
+/>
 
-          <label>
-            Day
-            <input
-              value={header.day}
-              onChange={(e) => updateHeader("day", e.target.value)}
-            />
-          </label>
-
-          <label>
-            Weather
-            <input
-              value={header.weather}
-              onChange={(e) => updateHeader("weather", e.target.value)}
-            />
-          </label>
-
-          <label>
-            Manager AM
-            <input
-              value={header.managerAm}
-              onChange={(e) => updateHeader("managerAm", e.target.value)}
-            />
-          </label>
-
-          <label>
-            Manager PM
-            <input
-              value={header.managerPm}
-              onChange={(e) => updateHeader("managerPm", e.target.value)}
-            />
-          </label>
-        </section>
 
         <section className="top-section-grid">
          <SalesSection
@@ -669,6 +740,24 @@ const cashToOffice =
             onChange={updateExpense}
           />
         </section>
+
+        <div className="no-print reset-section">
+  <button
+    className="danger-btn"
+    onClick={() => {
+      const confirmed = window.confirm(
+        "Are you sure you want to reset the entire close-out sheet? This cannot be undone."
+      );
+
+      if (confirmed) {
+        localStorage.removeItem(STORAGE_KEY);
+        window.location.reload();
+      }
+    }}
+  >
+    Reset Close-Out Sheet
+  </button>
+</div>
       </main>
     </div>
   );

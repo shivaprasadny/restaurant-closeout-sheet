@@ -73,11 +73,13 @@ button {
 }
 
 /* Header input row */
+/* Header input row */
 .info-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1.3fr 1.1fr 1.25fr 1.2fr 1fr 1fr;
   gap: 5px;
   margin-bottom: 6px;
+  align-items: end;
 }
 
 /* Labels above inputs */
@@ -330,6 +332,30 @@ td input {
   padding: 1px;
   text-align: center;
 }
+
+.reset-section {
+  margin-top: 40px;
+  text-align: center;
+}
+
+.danger-btn {
+  background: #c62828;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+/* Make select boxes look like inputs */
+select {
+  width: 100%;
+  border: 1px solid black;
+  height: 23px;
+  padding: 2px 3px;
+  font-size: 13px;
+  font-family: Arial, Helvetica, sans-serif;
+  background: white;
+}
 /* Print-only settings */
 @media print {
   /* White paper background */
@@ -429,6 +455,11 @@ td input {
 .closeout-notes {
   height: 42px;
   font-size: 11px;
+}
+select {
+  border: none;
+  height: 22px;
+  font-size: 12px;
 }
 
   /* US letter landscape */
