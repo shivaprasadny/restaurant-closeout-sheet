@@ -61,6 +61,9 @@ type ServerTableProps = {
    * Default should be 23 from CloseoutPage.
    */
   busboyPercent: string;
+  hasBusboy: boolean;
+  autoSplitTips: boolean;
+onAutoSplitTipsChange: (value: boolean) => void;
 };
 
 export default function ServerTable({
@@ -69,7 +72,10 @@ export default function ServerTable({
   setRows,
   tipOutPercent,
   onTipOutPercentChange,
+  hasBusboy,
   bartenderEnabled,
+  autoSplitTips,
+  onAutoSplitTipsChange,
   onBartenderEnabledChange,
   busboyPercent,
 }: ServerTableProps) {
@@ -84,12 +90,12 @@ export default function ServerTable({
    */
   const bartenderTotals = rows.reduce(
     (totals, row) => {
-      const calculated = calculateServerRow(
-        row,
-        bartenderEnabled,
-        bartenderPercentNumber,
-        busboyPercentNumber
-      );
+    const calculated = calculateServerRow(
+  row,
+  bartenderEnabled,
+  bartenderPercentNumber,
+  hasBusboy ? busboyPercentNumber : 0
+);
 
       return {
         cc: totals.cc + calculated.bartenderCc,
@@ -196,7 +202,20 @@ export default function ServerTable({
             />
             Bartender
           </label>
+          
         </div>
+
+<label className="bartender-check no-print">
+  <input
+    type="checkbox"
+    checked={autoSplitTips}
+    onChange={(e) =>
+      onAutoSplitTipsChange(e.target.checked)
+    }
+  />
+  Auto Tips
+</label>
+        
 
         <button className="small-btn no-print" onClick={addServer}>
           + Add Server
@@ -227,11 +246,11 @@ export default function ServerTable({
         <tbody>
           {rows.map((row, index) => {
             const calculated = calculateServerRow(
-              row,
-              bartenderEnabled,
-              bartenderPercentNumber,
-              busboyPercentNumber
-            );
+  row,
+  bartenderEnabled,
+  bartenderPercentNumber,
+  hasBusboy ? busboyPercentNumber : 0
+);
 
             return (
               <tr key={index}>
@@ -327,19 +346,59 @@ export default function ServerTable({
                 </td>
 
                 <td>
-                  <input value={money(calculated.serverCc)} readOnly />
+                  <input
+  value={
+    autoSplitTips
+      ? money(calculated.serverCc)
+      : row.serverCcTips
+  }
+  readOnly={autoSplitTips}
+  onChange={(e) =>
+    updateServer(index, "serverCcTips", e.target.value)
+  }
+/>
                 </td>
 
                 <td>
-                  <input value={money(calculated.serverCash)} readOnly />
+                  <input
+  value={
+    autoSplitTips
+      ? money(calculated.serverCash)
+      : row.serverCashTips
+  }
+  readOnly={autoSplitTips}
+  onChange={(e) =>
+    updateServer(index, "serverCashTips", e.target.value)
+  }
+/>
                 </td>
 
                 <td>
-                  <input value={money(calculated.bbCc)} readOnly />
+                  <input
+  value={
+    autoSplitTips
+      ? money(calculated.bbCc)
+      : row.bbCcTips
+  }
+  readOnly={autoSplitTips}
+  onChange={(e) =>
+    updateServer(index, "bbCcTips", e.target.value)
+  }
+/>
                 </td>
 
                 <td>
-                  <input value={money(calculated.bbCash)} readOnly />
+                  <input
+  value={
+    autoSplitTips
+      ? money(calculated.bbCash)
+      : row.bbCashTips
+  }
+  readOnly={autoSplitTips}
+  onChange={(e) =>
+    updateServer(index, "bbCashTips", e.target.value)
+  }
+/>
                 </td>
 
                 <td className="no-print">

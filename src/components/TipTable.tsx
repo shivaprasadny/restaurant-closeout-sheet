@@ -83,9 +83,33 @@ onAutoSplitChange,
   <input
     type="checkbox"
     checked={autoSplit}
-    onChange={(e) =>
-      onAutoSplitChange?.(e.target.checked)
-    }
+    onChange={(e) => {
+  const checked = e.target.checked;
+
+  // When turning Auto Split OFF,
+  // copy current calculated values into editable inputs.
+  if (!checked && isBusboy) {
+    const activeBusboyCount = rows.filter(
+      (r) => r.name.trim() !== ""
+    ).length;
+
+    rows.forEach((row, rowIndex) => {
+      if (row.name.trim() === "" || activeBusboyCount === 0) {
+        onChange(type, rowIndex, "floorTips", "");
+        onChange(type, rowIndex, "cashTips", "");
+        return;
+      }
+
+      const floorAmount = floorTipPool / activeBusboyCount;
+      const cashAmount = cashTipPool / activeBusboyCount;
+
+      onChange(type, rowIndex, "floorTips", floorAmount.toFixed(2));
+      onChange(type, rowIndex, "cashTips", cashAmount.toFixed(2));
+    });
+  }
+
+  onAutoSplitChange?.(checked);
+}}
   />
   Auto Split
 </label>
@@ -181,8 +205,12 @@ onAutoSplitChange,
 <td>
   <input
     value={
-      isBusboy ? floorTips.toFixed(2) : row.floorTips
-    }
+  isBusboy
+    ? autoSplit
+      ? floorTips.toFixed(2)
+      : row.floorTips
+    : row.floorTips
+}
   readOnly={isBusboy && autoSplit}
     onChange={(e) =>
       onChange(type, index, "floorTips", e.target.value)

@@ -95,6 +95,9 @@ const [loadedFromStorage, setLoadedFromStorage] = useState(false);
 const [amServerTipOutPercent, setAmServerTipOutPercent] = useState("8");
 const [pmServerTipOutPercent, setPmServerTipOutPercent] = useState("8");
 
+const [amAutoSplitServerTips, setAmAutoSplitServerTips] = useState(true);
+const [pmAutoSplitServerTips, setPmAutoSplitServerTips] = useState(true);
+
 // Bartender is optional.
 // If checked, manager knows bartender/bar tip-out applies.
 const [amBartenderEnabled, setAmBartenderEnabled] = useState(false);
@@ -309,6 +312,12 @@ const salesTotals = {
   total: takeOutTotal + serverTotal + houseChargeTotal,
 };
 
+
+const amHasBusboy =
+  amBusboys.some((b) => b.name.trim() !== "");
+
+const pmHasBusboy =
+  pmBusboys.some((b) => b.name.trim() !== "");
 /* =========================
    BUSBOY POOLS FROM SERVER SECTION
 ========================= */
@@ -669,6 +678,9 @@ function updateHouseCharge(
   tipOutPercent={amServerTipOutPercent}
   onTipOutPercentChange={setAmServerTipOutPercent}
   bartenderEnabled={amBartenderEnabled}
+  autoSplitTips={amAutoSplitServerTips}
+onAutoSplitTipsChange={setAmAutoSplitServerTips}
+  hasBusboy={amHasBusboy}
   onBartenderEnabledChange={setAmBartenderEnabled}
   busboyPercent={amBusboyPercent}
 />
@@ -679,8 +691,11 @@ function updateHouseCharge(
   setRows={setPmServers}
   tipOutPercent={pmServerTipOutPercent}
   onTipOutPercentChange={setPmServerTipOutPercent}
+  autoSplitTips={pmAutoSplitServerTips}
+onAutoSplitTipsChange={setPmAutoSplitServerTips}
   bartenderEnabled={pmBartenderEnabled}
   onBartenderEnabledChange={setPmBartenderEnabled}
+  hasBusboy={pmHasBusboy}
   busboyPercent={pmBusboyPercent}
 />
 
