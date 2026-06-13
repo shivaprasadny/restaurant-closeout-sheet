@@ -631,7 +631,14 @@ function updateHouseCharge(
 
   <div className="closeout-grid">
     {closeOutRows.map((row, index) => (
-      <label key={row.label}>
+      <label
+  key={row.label}
+  className={
+    row.label === "Notes" && !row.amount?.trim()
+      ? "print-hide-empty-notes"
+      : ""
+  }
+>
         {row.label}
 
         {row.label === "Notes" ? (

@@ -505,6 +505,9 @@ select {
 .title-with-restaurant {
   grid-template-columns: 1.3fr 2fr;
 }
+.print-hide-empty-notes {
+    display: none !important;
+  }
   /* US letter landscape */
   @page {
     size: letter landscape;
