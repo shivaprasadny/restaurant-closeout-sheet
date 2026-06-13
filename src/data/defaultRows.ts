@@ -25,6 +25,7 @@ export function makeRows<T>(count: number, row: T): T[] {
  */
 export const emptyServer: ServerRow = {
   name: "",
+  poolGroup: "",
   total: "",
   food: "",
   alcohol: "",

@@ -108,6 +108,69 @@ export default function ServerTable({
     }
   );
 
+
+
+
+function getPooledServerTips(index: number) {
+  const currentRow = rows[index];
+
+  const currentPool = currentRow.poolGroup?.trim().toUpperCase();
+
+  const currentCalculated = calculateServerRow(
+    currentRow,
+    bartenderEnabled,
+    bartenderPercentNumber,
+    hasBusboy ? busboyPercentNumber : 0
+  );
+
+  // No pool means server keeps own tips.
+  if (!currentPool) {
+    return {
+      serverCc: currentCalculated.serverCc,
+      serverCash: currentCalculated.serverCash,
+    };
+  }
+
+  const pooledRows = rows.filter(
+    (row) =>
+      row.poolGroup?.trim().toUpperCase() === currentPool
+  );
+
+  if (pooledRows.length === 0) {
+    return {
+      serverCc: currentCalculated.serverCc,
+      serverCash: currentCalculated.serverCash,
+    };
+  }
+
+  const poolTotals = pooledRows.reduce(
+    (totals, row) => {
+      const calculated = calculateServerRow(
+        row,
+        bartenderEnabled,
+        bartenderPercentNumber,
+        hasBusboy ? busboyPercentNumber : 0
+      );
+
+      return {
+        serverCc: totals.serverCc + calculated.serverCc,
+        serverCash: totals.serverCash + calculated.serverCash,
+      };
+    },
+    {
+      serverCc: 0,
+      serverCash: 0,
+    }
+  );
+
+  return {
+    serverCc: poolTotals.serverCc / pooledRows.length,
+    serverCash: poolTotals.serverCash / pooledRows.length,
+  };
+}
+
+
+
   /**
    * Update only manual fields in a server row.
    */
@@ -116,10 +179,13 @@ export default function ServerTable({
     prev.map((row, i) => {
       if (i !== index) return row;
 
-      const updatedRow = {
-        ...row,
-        [field]: value,
-      };
+const cleanValue =
+  field === "poolGroup" ? value.toUpperCase() : value;
+
+const updatedRow = {
+  ...row,
+  [field]: cleanValue,
+};
 
       const total = Number(updatedRow.total || 0);
       const food = Number(updatedRow.food || 0);
@@ -239,6 +305,7 @@ export default function ServerTable({
             <th>Srv Cash</th>
             <th>BB CC</th>
             <th>BB Cash</th>
+            <th className="no-print">Pool</th>
             <th className="no-print">X</th>
           </tr>
         </thead>
@@ -251,6 +318,7 @@ export default function ServerTable({
   bartenderPercentNumber,
   hasBusboy ? busboyPercentNumber : 0
 );
+const pooledTips = getPooledServerTips(index);
 
             return (
               <tr key={index}>
@@ -349,26 +417,34 @@ export default function ServerTable({
                   <input
   value={
     autoSplitTips
-      ? money(calculated.serverCc)
+      ? money(pooledTips.serverCc)
       : row.serverCcTips
   }
   readOnly={autoSplitTips}
   onChange={(e) =>
-    updateServer(index, "serverCcTips", e.target.value)
+    updateServer(
+      index,
+      "serverCcTips",
+      e.target.value
+    )
   }
 />
                 </td>
 
                 <td>
-                  <input
+                 <input
   value={
     autoSplitTips
-      ? money(calculated.serverCash)
+      ? money(pooledTips.serverCash)
       : row.serverCashTips
   }
   readOnly={autoSplitTips}
   onChange={(e) =>
-    updateServer(index, "serverCashTips", e.target.value)
+    updateServer(
+      index,
+      "serverCashTips",
+      e.target.value
+    )
   }
 />
                 </td>
@@ -400,6 +476,20 @@ export default function ServerTable({
   }
 />
                 </td>
+
+                <td className="no-print">
+  <input
+    className="pool-input"
+    value={row.poolGroup}
+    onChange={(e) =>
+      updateServer(
+        index,
+        "poolGroup",
+        e.target.value.toUpperCase()
+      )
+    }
+  />
+</td>
 
                 <td className="no-print">
                   <button

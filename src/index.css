@@ -376,7 +376,16 @@ select {
   font-weight: bold;
   text-align: center;
 }
+.pool-input {
+  width: 42px;
+  text-align: center;
+  font-weight: bold;
+}
 
+.avg-input {
+  min-width: 65px;
+  width: 65px;
+}
 /* Print-only settings */
 @media print {
   /* White paper background */

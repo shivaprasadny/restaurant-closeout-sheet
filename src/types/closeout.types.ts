@@ -21,6 +21,7 @@ export type SalesRow = {
 
 export type ServerRow = {
   name: string;
+  poolGroup: string;
   total: string;
   food: string;
   alcohol: string;
@@ -35,7 +36,6 @@ export type ServerRow = {
   bbCcTips: string;
   bbCashTips: string;
 };
-
 export type TipRow = {
   name: string;
   houseChargeTips: string;
