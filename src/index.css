@@ -191,13 +191,18 @@ td input {
 }
 
 /* Tables, guests, average columns smaller */
+/* Small server columns */
 .server-table th:nth-child(5),
 .server-table td:nth-child(5),
 .server-table th:nth-child(6),
-.server-table td:nth-child(6),
+.server-table td:nth-child(6) {
+  width: 38px;
+}
+
+/* Avg column wider */
 .server-table th:nth-child(7),
 .server-table td:nth-child(7) {
-  width: 38px;
+  width: 58px;
 }
 
 /* Day closeout input grid */
@@ -376,15 +381,18 @@ select {
   font-weight: bold;
   text-align: center;
 }
-.pool-input {
-  width: 42px;
-  text-align: center;
-  font-weight: bold;
+/* Make Avg column wider by class, not column number */
+.avg-input {
+  width: 100% !important;
+  min-width: 0 !important;
+  font-size: 10px !important;
 }
 
-.avg-input {
-  min-width: 65px;
-  width: 65px;
+/* Keep Pool small */
+.pool-input {
+  width: 42px !important;
+  text-align: center;
+  font-weight: bold;
 }
 /* Print-only settings */
 @media print {
@@ -505,9 +513,18 @@ select {
 .title-with-restaurant {
   grid-template-columns: 1.3fr 2fr;
 }
-.print-hide-empty-notes {
-    display: none !important;
-  }
+/* Make Avg column wider by class, not column number */
+.avg-input {
+  width: 70px !important;
+  min-width: 70px;
+}
+
+/* Keep Pool small */
+.pool-input {
+  width: 42px !important;
+  text-align: center;
+  font-weight: bold;
+}
   /* US letter landscape */
   @page {
     size: letter landscape;

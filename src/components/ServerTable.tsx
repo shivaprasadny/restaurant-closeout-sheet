@@ -377,13 +377,11 @@ const pooledTips = getPooledServerTips(index);
                 </td>
 
                 <td>
-  <input
-    className="avg-input"
-    value={row.average}
-    onChange={(e) =>
-      updateServer(index, "average", e.target.value)
-    }
-  />
+ <input
+  className="avg-input"
+  value={row.average}
+  onChange={(e) => updateServer(index, "average", e.target.value)}
+/>
 </td>
 
                 <td>
