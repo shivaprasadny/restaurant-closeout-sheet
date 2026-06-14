@@ -411,6 +411,7 @@ select {
   width: auto;
   height: auto;
 }
+
 /* Print-only settings */
 @media print {
   /* White paper background */
@@ -541,6 +542,12 @@ select {
   width: 42px !important;
   text-align: center;
   font-weight: bold;
+}
+.hide-empty-notes-print {
+  display: none !important;
+}
+.print-hide-empty-notes {
+  display: none !important;
 }
   /* US letter landscape */
   @page {
