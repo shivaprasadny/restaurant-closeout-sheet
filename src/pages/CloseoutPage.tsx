@@ -98,6 +98,10 @@ const [pmServerTipOutPercent, setPmServerTipOutPercent] = useState("8");
 const [amAutoSplitServerTips, setAmAutoSplitServerTips] = useState(true);
 const [pmAutoSplitServerTips, setPmAutoSplitServerTips] = useState(true);
 
+
+const [amEnabled, setAmEnabled] = useState(true);
+const [pmEnabled, setPmEnabled] = useState(true);
+
 // Bartender is optional.
 // If checked, manager knows bartender/bar tip-out applies.
 const [amBartenderEnabled, setAmBartenderEnabled] = useState(false);
@@ -602,6 +606,28 @@ function updateHouseCharge(
   <div>DAILY CLOSE OUT SHEET</div>
 </div>
 
+<div className="shift-toggle-row no-print">
+  <label>
+    <input
+      type="checkbox"
+      checked={amEnabled}
+      onChange={(e) => setAmEnabled(e.target.checked)}
+    />
+    AM Shift
+  </label>
+
+  <label>
+    <input
+      type="checkbox"
+      checked={pmEnabled}
+      onChange={(e) => setPmEnabled(e.target.checked)}
+    />
+    PM Shift
+  </label>
+</div>
+
+
+  
         
 
 <HeaderSection
@@ -678,6 +704,7 @@ function updateHouseCharge(
   </div>
 </div>
         </section>
+        {amEnabled && (
 <ServerTable
   title="AM SERVER / WAITER CHECKOUT"
   rows={amServers}
@@ -690,7 +717,8 @@ onAutoSplitTipsChange={setAmAutoSplitServerTips}
   hasBusboy={amHasBusboy}
   onBartenderEnabledChange={setAmBartenderEnabled}
   busboyPercent={amBusboyPercent}
-/>
+/>   )}
+{pmEnabled && (
 
 <ServerTable
   title="PM SERVER / WAITER CHECKOUT"
@@ -705,8 +733,10 @@ onAutoSplitTipsChange={setPmAutoSplitServerTips}
   hasBusboy={pmHasBusboy}
   busboyPercent={pmBusboyPercent}
 />
+)}
 
         <section className="two-column-grid">
+            {amEnabled && (
           <TipTable
   title="AM BUSBOY"
   type="AM_BUSBOY"
@@ -721,6 +751,9 @@ onAutoSplitTipsChange={setPmAutoSplitServerTips}
   onRemove={(index) => removeTipRow("AM_BUSBOY", index)}
   onChange={updateTipRow}
 />
+            )}
+
+            {pmEnabled && (
 
 <TipTable
   title="PM BUSBOY"
@@ -736,9 +769,12 @@ onAutoSplitTipsChange={setPmAutoSplitServerTips}
   onRemove={(index) => removeTipRow("PM_BUSBOY", index)}
   onChange={updateTipRow}
 />
+
+            )}
         </section>
 
         <section className="two-column-grid">
+            {amEnabled && (
           <TipTable
             title="AM MANAGER"
             type="AM_MANAGER"
@@ -747,6 +783,9 @@ onAutoSplitTipsChange={setPmAutoSplitServerTips}
             onRemove={(index) => removeTipRow("AM_MANAGER", index)}
             onChange={updateTipRow}
           />
+            )}
+
+            {pmEnabled && (
 
           <TipTable
             title="PM MANAGER"
@@ -756,6 +795,8 @@ onAutoSplitTipsChange={setPmAutoSplitServerTips}
             onRemove={(index) => removeTipRow("PM_MANAGER", index)}
             onChange={updateTipRow}
           />
+
+            )}
         </section>
       </main>
 
@@ -766,6 +807,7 @@ onAutoSplitTipsChange={setPmAutoSplitServerTips}
         <div className="top-title">HOUSE CHARGE DETAILS / CHECK LOG</div>
 
         <section className="two-column-grid">
+            {amEnabled && (
           <HouseChargeTable
             title="AM HOUSE CHARGE DETAILS"
             rows={amHouseCharges}
@@ -774,7 +816,10 @@ onAutoSplitTipsChange={setPmAutoSplitServerTips}
             onAdd={() => addHouseCharge("AM")}
             onRemove={(index) => removeHouseCharge("AM", index)}
             onChange={updateHouseCharge}
-          />
+          />)}
+
+
+{pmEnabled && (
 
           <HouseChargeTable
             title="PM HOUSE CHARGE DETAILS"
@@ -785,9 +830,11 @@ onAutoSplitTipsChange={setPmAutoSplitServerTips}
             onRemove={(index) => removeHouseCharge("PM", index)}
             onChange={updateHouseCharge}
           />
+)}
         </section>
 
         <section className="two-column-grid">
+            {amEnabled && (
           <CheckLogTable
             title="AM CHECK LOG"
             rows={amCheckLogs}
@@ -795,7 +842,8 @@ onAutoSplitTipsChange={setPmAutoSplitServerTips}
             onAdd={() => addCheckLog("AM")}
             onRemove={(index) => removeCheckLog("AM", index)}
             onChange={updateCheckLog}
-          />
+          />)}
+{pmEnabled && (
 
           <CheckLogTable
             title="PM CHECK LOG"
@@ -804,10 +852,11 @@ onAutoSplitTipsChange={setPmAutoSplitServerTips}
             onAdd={() => addCheckLog("PM")}
             onRemove={(index) => removeCheckLog("PM", index)}
             onChange={updateCheckLog}
-          />
+          />)}
         </section>
 
         <section className="two-column-grid">
+            {amEnabled && (
           <ExpenseTable
             title="AM EXPENSES"
             rows={amExpenses}
@@ -817,6 +866,9 @@ onAutoSplitTipsChange={setPmAutoSplitServerTips}
             onRemove={(index) => removeExpense("AM", index)}
             onChange={updateExpense}
           />
+            )}
+
+            {pmEnabled && (
 
           <ExpenseTable
             title="PM EXPENSES"
@@ -826,7 +878,7 @@ onAutoSplitTipsChange={setPmAutoSplitServerTips}
             onAdd={() => addExpense("PM")}
             onRemove={(index) => removeExpense("PM", index)}
             onChange={updateExpense}
-          />
+          />)}
         </section>
 
         <div className="no-print reset-section">
