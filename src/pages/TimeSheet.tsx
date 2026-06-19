@@ -3,6 +3,7 @@ import HeaderSection from "../components/HeaderSection";
 import type { HeaderData } from "../types/closeout.types";
 import { capitalizeName } from "../utils/textFormatting";
 import { getEmployeesForPosition } from "../data/employees";
+import "../styles/timesheet.css";
 
 /* One row in the time sheet table */
 type TimeSheetRow = {
@@ -470,6 +471,7 @@ function TimeSheetTable({
 
               <td>
                 <input
+                  inputMode="numeric"
                   value={row.breakTime}
                   onChange={(e) =>
                     onChange(shift, index, "breakTime", e.target.value)

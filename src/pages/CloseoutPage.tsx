@@ -52,13 +52,18 @@ import HouseChargeTable from "../components/HouseChargeTable";
 import CheckLogTable from "../components/CheckLogTable";
 import HeaderSection from "../components/HeaderSection";
 import TimeSheet from "./TimeSheet";
+import FoodOrderPage from "./FoodOrderPage";
 
-type AppPage = "closeout" | "timesheet";
+type AppPage = "closeout" | "timesheet" | "food-order";
+
+function getPageFromHash(): AppPage {
+  if (window.location.hash === "#timesheet") return "timesheet";
+  if (window.location.hash === "#food-order") return "food-order";
+  return "closeout";
+}
 
 export default function CloseoutPage() {
-  const [page, setPage] = useState<AppPage>(() =>
-    window.location.hash === "#timesheet" ? "timesheet" : "closeout"
-  );
+  const [page, setPage] = useState<AppPage>(getPageFromHash);
 
     const STORAGE_KEY = "restaurant-closeout-draft-v1";
     const today = new Date().toISOString().split("T")[0];
@@ -170,9 +175,7 @@ const [pmAutoSplitBusboy, setPmAutoSplitBusboy] = useState(true);
 
 useEffect(() => {
   const handleHashChange = () => {
-    setPage(
-      window.location.hash === "#timesheet" ? "timesheet" : "closeout"
-    );
+    setPage(getPageFromHash());
   };
 
   window.addEventListener("hashchange", handleHashChange);
@@ -180,7 +183,12 @@ useEffect(() => {
 }, []);
 
 useEffect(() => {
-  const nextHash = page === "timesheet" ? "#timesheet" : "";
+  const nextHash =
+    page === "timesheet"
+      ? "#timesheet"
+      : page === "food-order"
+        ? "#food-order"
+        : "";
 
   if (window.location.hash !== nextHash) {
     window.history.replaceState(
@@ -611,12 +619,12 @@ function updateHouseCharge(
 
 
   if (page === "timesheet") {
-  return (
-    <TimeSheet
-      onBack={() => setPage("closeout")}
-    />
-  );
-}
+    return <TimeSheet onBack={() => setPage("closeout")} />;
+  }
+
+  if (page === "food-order") {
+    return <FoodOrderPage onBack={() => setPage("closeout")} />;
+  }
 
 
   /* =========================
@@ -629,6 +637,13 @@ function updateHouseCharge(
   <h1>Restaurant Close-Out Sheet</h1>
 
   <div className="app-actions">
+    <button
+      type="button"
+      className="no-print"
+      onClick={() => setPage("food-order")}
+    >
+      Food Order
+    </button>
     <button
       type="button"
       className="no-print"

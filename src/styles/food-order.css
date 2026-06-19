@@ -1,0 +1,332 @@
+.food-order-page {
+  width: min(1180px, calc(100% - 32px));
+  margin: 20px auto;
+  padding: 20px;
+  border-radius: 14px;
+  background: #f8fafc;
+  color: #172033;
+  box-shadow: 0 12px 32px rgb(15 23 42 / 12%);
+  page: food-order;
+}
+
+.food-order-toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.food-order-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 16px;
+  padding: 20px;
+  border-radius: 12px;
+  background: #173f35;
+  color: #fff;
+}
+
+.food-order-heading p,
+.food-order-heading h1 {
+  margin: 0;
+}
+
+.food-order-heading p {
+  margin-bottom: 4px;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.food-order-heading h1 {
+  font-size: 34px;
+}
+
+.food-order-heading span {
+  max-width: 360px;
+  text-align: right;
+  font-size: 14px;
+}
+
+.food-order-meta {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr 1fr;
+  gap: 12px;
+  margin: 16px 0;
+  padding: 16px;
+  border: 1px solid #d7dee7;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.food-order-meta label,
+.order-item-row label {
+  display: grid;
+  gap: 5px;
+}
+
+.food-order-meta input,
+.food-order-meta select {
+  height: 42px;
+  border-color: #aeb9c7;
+  border-radius: 7px;
+  font-size: 15px;
+}
+
+.order-section {
+  margin-top: 18px;
+  overflow: hidden;
+  border: 1px solid #d7dee7;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.order-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: #eef4f1;
+}
+
+.order-section-meat .order-section-header {
+  background: #f8eeee;
+}
+
+.order-section-seafood .order-section-header {
+  background: #edf5f9;
+}
+
+.order-section-header h2 {
+  margin: 0;
+  font-size: 21px;
+}
+
+.order-section-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.copy-order-btn {
+  background: #177245;
+}
+
+.order-column-labels,
+.order-item-row {
+  display: grid;
+  grid-template-columns: minmax(220px, 2fr) minmax(100px, 0.65fr) minmax(110px, 0.7fr) 70px;
+  gap: 10px;
+  align-items: center;
+}
+
+.order-column-labels {
+  padding: 9px 14px;
+  border-top: 1px solid #d7dee7;
+  border-bottom: 1px solid #d7dee7;
+  background: #f8fafc;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.order-column-labels span:last-child {
+  text-align: center;
+}
+
+.order-item-row {
+  padding: 8px 14px;
+  border-bottom: 1px solid #e5e9ef;
+}
+
+.order-item-row:last-child {
+  border-bottom: 0;
+}
+
+.order-item-row label > span {
+  display: none;
+}
+
+.order-item-row input,
+.order-item-row select {
+  height: 42px;
+  border: 1px solid #b8c2ce;
+  border-radius: 7px;
+  background: #fff;
+  font-size: 16px;
+}
+
+.order-item-name input[readonly] {
+  border-color: transparent;
+  background: transparent;
+  font-weight: 600;
+}
+
+.order-item-remove {
+  display: flex;
+  justify-content: center;
+}
+
+.order-item-remove button {
+  width: 38px;
+  min-height: 38px;
+  padding: 0;
+  background: #b42318;
+  font-size: 20px;
+}
+
+.food-order-reset {
+  margin: 28px 0 8px;
+  text-align: center;
+}
+
+@media screen and (max-width: 900px) {
+  .food-order-page {
+    width: calc(100% - 20px);
+    margin: 10px;
+    padding: 14px;
+  }
+
+  .food-order-meta {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .food-order-page {
+    width: 100%;
+    margin: 0;
+    padding: 10px;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .food-order-toolbar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .food-order-toolbar button,
+  .order-section-actions button {
+    min-height: 46px;
+  }
+
+  .food-order-heading {
+    align-items: start;
+    flex-direction: column;
+    padding: 16px;
+  }
+
+  .food-order-heading h1 {
+    font-size: 28px;
+  }
+
+  .food-order-heading span {
+    max-width: none;
+    text-align: left;
+  }
+
+  .food-order-meta {
+    grid-template-columns: 1fr;
+    padding: 12px;
+  }
+
+  .food-order-meta input,
+  .food-order-meta select {
+    min-height: 48px;
+    font-size: 16px;
+  }
+
+  .order-section-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .order-section-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .order-column-labels {
+    display: none;
+  }
+
+  .order-item-row {
+    grid-template-columns: minmax(0, 1fr) 88px 96px 40px;
+    gap: 7px;
+    padding: 10px;
+  }
+
+  .order-item-row input,
+  .order-item-row select {
+    min-height: 48px;
+    padding: 6px 8px;
+    font-size: 16px;
+  }
+
+  .order-item-name input {
+    padding-left: 0;
+  }
+
+  .order-item-remove button {
+    width: 40px;
+    min-height: 44px;
+  }
+}
+
+@media screen and (max-width: 390px) {
+  .order-item-row {
+    grid-template-columns: minmax(0, 1fr) 76px 84px 36px;
+    gap: 5px;
+    padding: 8px;
+  }
+
+  .order-item-row input,
+  .order-item-row select {
+    padding: 5px;
+    font-size: 15px;
+  }
+}
+
+@page food-order {
+  size: letter portrait;
+  margin: 0.35in;
+}
+
+@media print {
+  .food-order-page {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+  }
+
+  .food-order-heading {
+    color: #000;
+    background: #fff;
+    border: 1px solid #000;
+  }
+
+  .food-order-meta,
+  .order-section {
+    break-inside: avoid;
+    border-color: #000;
+  }
+
+  .order-section-header,
+  .order-column-labels {
+    background: #fff !important;
+  }
+
+  .order-item-row {
+    grid-template-columns: 2fr 0.65fr 0.7fr;
+    border-color: #000;
+  }
+
+  .order-item-row input,
+  .order-item-row select {
+    border: 0;
+  }
+}

@@ -404,288 +404,164 @@ select {
   width: auto;
   height: auto;
 }
-.timesheet-page {
-  max-width: 1100px;
-  margin: 20px auto;
-  background: white;
-  padding: 20px;
-  color: #000;
-  page: timesheet;
-}
 
-.timesheet-table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;
-}
+@media screen and (max-width: 900px) {
+  body {
+    background: #dfe3e8;
+  }
 
-.timesheet-table th,
-.timesheet-table td {
-  border: 1px solid #000;
-  height: 30px;
-  padding: 0;
-  text-align: center;
-}
+  .app-header {
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 12px 16px;
+  }
 
-.timesheet-table th {
-  font-size: 13px;
-  font-weight: bold;
-}
-
-.timesheet-table input {
-  width: 100%;
-  height: 100%;
-  border: none;
-  padding: 4px;
-  font-size: 15px;
-  box-sizing: border-box;
-}
-
-.timesheet-table th:nth-child(1),
-.timesheet-table td:nth-child(1) {
-  width: 3%;
-}
-
-.timesheet-table th:nth-child(2),
-.timesheet-table td:nth-child(2) {
-  width: 34%;
-}
-
-.timesheet-table th:nth-child(3),
-.timesheet-table td:nth-child(3) {
-  width: 14%;
-}
-
-.timesheet-table th:nth-child(4),
-.timesheet-table td:nth-child(4),
-.timesheet-table th:nth-child(5),
-.timesheet-table td:nth-child(5),
-.timesheet-table th:nth-child(6),
-.timesheet-table td:nth-child(6) {
-  width: 10%;
-}
-
-.timesheet-table th:nth-child(7),
-.timesheet-table td:nth-child(7) {
-  width: 16%;
-}
-
-.timesheet-table th:nth-child(8),
-.timesheet-table td:nth-child(8) {
-  width: 3%;
-}
-
-.sheet-title {
-  text-align: center;
-  margin: 0;
-  font-size: 28px;
-  font-weight: 700;
-  letter-spacing: 1px;
-}
-
-.timesheet-section {
-  margin-top: 14px;
-}
-
-.timesheet-section h2 {
-  text-align: center;
-  font-size: 18px;
-  margin: 10px 0 6px;
-}
-
-.icon-btn {
-  width: 26px;
-  height: 24px;
-  border: 1px solid #111;
-  background: #fff;
-  cursor: pointer;
-  font-weight: bold;
-}
-.timesheet-toolbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.toolbar-left {
-  display: flex;
-  gap: 10px;
-}
-
-.shift-inline-toggle {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  font-weight: bold;
-  white-space: nowrap;
-}
-
-.shift-inline-toggle label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.icon-btn.danger {
-  color: #900;
-}
-
-.timesheet-page,
-.timesheet-page * {
-  color: #000;
-}
-
-.timesheet-page input {
-  background: #fff;
-  color: #000;
-}
-.timesheet-title-row {
-  display: grid;
-  grid-template-columns: minmax(280px, 1fr) 1.4fr;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.restaurant-title-editor {
-  display: grid;
-  grid-template-columns: 140px 1fr;
-  align-items: center;
-  gap: 8px;
-  font-weight: bold;
-}
-
-.restaurant-title-editor input {
-  height: 28px;
-  border: 1px solid #000;
-  font-size: 16px;
-  background: #fff;
-  color: #000;
-}
-
-.timesheet-print-heading {
-  text-align: center;
-}
-
-.timesheet-restaurant-name {
-  display: none;
-}
-
-@media (max-width: 700px) {
-  .timesheet-toolbar,
-  .timesheet-title-row {
-    grid-template-columns: 1fr;
+  .app-actions {
     flex-wrap: wrap;
   }
-}
 
-@page timesheet {
-  size: letter portrait;
-  margin: 0;
-}
+  .sheet {
+    width: calc(100% - 20px);
+    min-height: 0;
+    margin: 10px;
+    padding: 10px;
+  }
 
-@media print {
-  .timesheet-page {
-    margin: 0;
-    padding: 0.3in;
-    max-width: none;
+  .info-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .top-section-grid,
+  .two-column-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .box {
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .box table {
+    min-width: 560px;
+  }
+
+  .box .server-table {
+    min-width: 1050px;
+  }
+
+  .section-title-row,
+  .server-header-row {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .server-options {
+    flex-wrap: wrap;
+  }
+
+  .closeout-notes {
     width: 100%;
-    min-height: 100vh;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .app-header {
+    align-items: stretch;
+    flex-direction: column;
   }
 
-  .timesheet-title-row {
-    display: block;
-    margin-bottom: 10px;
+  .app-header h1 {
+    text-align: center;
   }
 
-  .restaurant-title-editor {
-    display: none;
+  .app-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
   }
 
-  .timesheet-restaurant-name {
-    display: block;
-    margin-bottom: 2px;
-    font-size: 22px;
-    font-weight: 700;
-    line-height: 1.1;
-    text-transform: uppercase;
+  button,
+  .email-btn {
+    min-height: 44px;
+    padding: 10px 12px;
   }
 
-  .timesheet-title-row .sheet-title {
-    font-size: 24px;
-    line-height: 1.1;
+  .small-btn,
+  .delete-btn {
+    min-height: 38px;
+    padding: 7px 10px;
   }
 
-  .timesheet-table input {
+  .sheet {
+    width: 100%;
+    margin: 0 0 12px;
+    padding: 8px;
+    border-width: 1px;
+  }
+
+  .top-title {
+    font-size: 18px;
+    letter-spacing: 0;
+  }
+
+  .title-with-restaurant {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .restaurant-title-field input {
+    height: 44px;
+    font-size: 20px;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  label {
     font-size: 14px;
   }
 
-  .timesheet-page .timesheet-table {
-    border: 1pt solid #000 !important;
-    border-collapse: collapse !important;
-    border-spacing: 0 !important;
-    print-color-adjust: exact;
-    -webkit-print-color-adjust: exact;
+  input,
+  select,
+  textarea {
+    min-height: 44px;
+    font-size: 16px;
   }
 
-  .timesheet-table thead {
-    display: table-header-group;
+  td input {
+    min-height: 38px;
+    font-size: 16px;
   }
 
-  .timesheet-table tr {
-    break-inside: avoid;
-    page-break-inside: avoid;
+  .shift-toggle-row {
+    gap: 12px;
   }
 
-  .timesheet-page .timesheet-table th,
-  .timesheet-page .timesheet-table td {
-    border: 1pt solid #000 !important;
-    height: 28px;
-    background: #fff;
-    outline: 0.25pt solid #000;
-    outline-offset: -0.25pt;
+  .shift-toggle-row label {
+    min-height: 44px;
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
   }
 
-  .timesheet-table th:nth-child(2),
-  .timesheet-table td:nth-child(2) {
-    width: 44%;
+  .shift-toggle-row input,
+  .bartender-check input,
+  .tip-percent-inline input[type="checkbox"] {
+    width: 22px;
+    min-height: 22px;
+    height: 22px;
   }
 
-  .timesheet-table th:nth-child(3),
-  .timesheet-table td:nth-child(3) {
-    width: 15%;
+  .closeout-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
   }
 
-  .timesheet-table th:nth-child(4),
-  .timesheet-table td:nth-child(4) {
-    width: 10%;
-  }
-
-  .timesheet-table th:nth-child(5),
-  .timesheet-table td:nth-child(5) {
-    width: 9%;
-  }
-
-  .timesheet-table th:nth-child(6),
-  .timesheet-table td:nth-child(6) {
-    width: 10%;
-  }
-
-  .timesheet-table th:nth-child(7),
-  .timesheet-table td:nth-child(7) {
-    width: 12%;
-  }
-
-  .timesheet-table td:nth-child(2) input {
-    font-size: 11px;
-    text-align: left;
-    padding-left: 3px;
-  }
-
-  .timesheet-table td:nth-child(7) input {
-    font-size: 10px;
+  .reset-section {
+    margin-top: 24px;
   }
 }
 
