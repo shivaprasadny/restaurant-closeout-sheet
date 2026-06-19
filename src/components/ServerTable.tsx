@@ -6,6 +6,7 @@ import {
   money,
   num,
 } from "../utils/closeoutCalculations";
+import { capitalizeName } from "../utils/textFormatting";
 
 /**
  * ServerTable
@@ -180,7 +181,11 @@ function getPooledServerTips(index: number) {
       if (i !== index) return row;
 
 const cleanValue =
-  field === "poolGroup" ? value.toUpperCase() : value;
+  field === "poolGroup"
+    ? value.toUpperCase()
+    : field === "name"
+      ? capitalizeName(value)
+      : value;
 
 const updatedRow = {
   ...row,

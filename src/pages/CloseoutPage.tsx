@@ -42,6 +42,7 @@ import {
   calculateServerRow,
   num,
 } from "../utils/closeoutCalculations";
+import { capitalizeName } from "../utils/textFormatting";
 
 
 import ServerTable from "../components/ServerTable";
@@ -50,8 +51,14 @@ import ExpenseTable from "../components/ExpenseTable";
 import HouseChargeTable from "../components/HouseChargeTable";
 import CheckLogTable from "../components/CheckLogTable";
 import HeaderSection from "../components/HeaderSection";
+import TimeSheet from "./TimeSheet";
+
+type AppPage = "closeout" | "timesheet";
 
 export default function CloseoutPage() {
+  const [page, setPage] = useState<AppPage>(() =>
+    window.location.hash === "#timesheet" ? "timesheet" : "closeout"
+  );
 
     const STORAGE_KEY = "restaurant-closeout-draft-v1";
     const today = new Date().toISOString().split("T")[0];
@@ -160,6 +167,29 @@ const [pmAutoSplitBusboy, setPmAutoSplitBusboy] = useState(true);
   const [pmCheckLogs, setPmCheckLogs] = useState(
     makeRows(4, emptyCheckLog)
   );
+
+useEffect(() => {
+  const handleHashChange = () => {
+    setPage(
+      window.location.hash === "#timesheet" ? "timesheet" : "closeout"
+    );
+  };
+
+  window.addEventListener("hashchange", handleHashChange);
+  return () => window.removeEventListener("hashchange", handleHashChange);
+}, []);
+
+useEffect(() => {
+  const nextHash = page === "timesheet" ? "#timesheet" : "";
+
+  if (window.location.hash !== nextHash) {
+    window.history.replaceState(
+      null,
+      "",
+      `${window.location.pathname}${window.location.search}${nextHash}`
+    );
+  }
+}, [page]);
 
 
 
@@ -393,7 +423,12 @@ const cashToOffice =
   ========================= */
 
   function updateHeader(field: keyof HeaderData, value: string) {
-    setHeader((prev) => ({ ...prev, [field]: value }));
+    const cleanValue =
+      field === "managerAm" || field === "managerPm"
+        ? capitalizeName(value)
+        : value;
+
+    setHeader((prev) => ({ ...prev, [field]: cleanValue }));
   }
 
   function updateSales(index: number, field: keyof SalesRow, value: string) {
@@ -427,7 +462,12 @@ const cashToOffice =
 
     setterMap[type]((prev) =>
       prev.map((row, i) =>
-        i === index ? { ...row, [field]: value } : row
+        i === index
+          ? {
+              ...row,
+              [field]: field === "name" ? capitalizeName(value) : value,
+            }
+          : row
       )
     );
   }
@@ -449,6 +489,8 @@ const cashToOffice =
 
   setterMap[type]((prev) => [...prev, { ...newRow }]);
 }
+
+
 
   function removeTipRow(
     type: "AM_BUSBOY" | "PM_BUSBOY" | "AM_MANAGER" | "PM_MANAGER",
@@ -547,7 +589,12 @@ function updateHouseCharge(
 
     setter((prev) =>
       prev.map((row, i) =>
-        i === index ? { ...row, [field]: value } : row
+        i === index
+          ? {
+              ...row,
+              [field]: field === "name" ? capitalizeName(value) : value,
+            }
+          : row
       )
     );
   }
@@ -563,6 +610,14 @@ function updateHouseCharge(
   }
 
 
+  if (page === "timesheet") {
+  return (
+    <TimeSheet
+      onBack={() => setPage("closeout")}
+    />
+  );
+}
+
 
   /* =========================
      JSX
@@ -574,7 +629,16 @@ function updateHouseCharge(
   <h1>Restaurant Close-Out Sheet</h1>
 
   <div className="app-actions">
-    <button onClick={() => window.print()}>Print Close-Out Sheet</button>
+    <button
+      type="button"
+      className="no-print"
+      onClick={() => setPage("timesheet")}
+    >
+      Open Time Sheet
+    </button>
+    <button type="button" onClick={() => window.print()}>
+      Print Close-Out Sheet
+    </button>
   </div>
 </div>
 
