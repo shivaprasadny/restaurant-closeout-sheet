@@ -1,4 +1,5 @@
 import type { HeaderData } from "../types/closeout.types";
+import { compactManagerNames, managerNames } from "../data/employees";
 
 /**
  * Top header section:
@@ -15,9 +16,18 @@ import type { HeaderData } from "../types/closeout.types";
 type Props = {
   header: HeaderData;
   onChange: (field: keyof HeaderData, value: string) => void;
+  compactManagerNames?: boolean;
 };
 
-export default function HeaderSection({ header, onChange }: Props) {
+export default function HeaderSection({
+  header,
+  onChange,
+  compactManagerNames: useCompactManagerNames = false,
+}: Props) {
+  const managerOptions = useCompactManagerNames
+    ? compactManagerNames
+    : managerNames;
+
   function updateDate(value: string) {
     const selectedDate = new Date(value + "T00:00:00");
 
@@ -98,6 +108,7 @@ export default function HeaderSection({ header, onChange }: Props) {
       <label>
         Manager AM
         <input
+          list="manager-name-list"
           value={header.managerAm}
           onChange={(e) => onChange("managerAm", e.target.value)}
         />
@@ -106,10 +117,17 @@ export default function HeaderSection({ header, onChange }: Props) {
       <label>
         Manager PM
         <input
+          list="manager-name-list"
           value={header.managerPm}
           onChange={(e) => onChange("managerPm", e.target.value)}
         />
       </label>
+
+      <datalist id="manager-name-list">
+        {managerOptions.map((managerName) => (
+          <option key={managerName} value={managerName} />
+        ))}
+      </datalist>
     </section>
   );
 }

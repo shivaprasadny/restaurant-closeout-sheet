@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import HeaderSection from "../components/HeaderSection";
 import type { HeaderData } from "../types/closeout.types";
 import { capitalizeName } from "../utils/textFormatting";
+import { getEmployeesForPosition } from "../data/employees";
 
 /* One row in the time sheet table */
 type TimeSheetRow = {
@@ -10,7 +11,6 @@ type TimeSheetRow = {
   start: string;
   breakTime: string;
   end: string;
-  paidAmount: string;
   note: string;
 };
 
@@ -56,7 +56,6 @@ const makeRows = (positions: string[]): TimeSheetRow[] =>
     start: "",
     breakTime: "",
     end: "",
-    paidAmount: "",
     note: "",
   }));
 
@@ -105,7 +104,6 @@ function migrateRow(row: LegacyTimeSheetRow): TimeSheetRow {
     start: row.start ?? "",
     breakTime: row.breakTime ?? "",
     end: row.end ?? row.signOut ?? row.timeOut ?? "",
-    paidAmount: row.paidAmount ?? "",
     note: row.note ?? "",
   };
 }
@@ -248,7 +246,6 @@ export default function TimeSheet({
       start: "",
       breakTime: "",
       end: "",
-      paidAmount: "",
       note: "",
     };
 
@@ -345,8 +342,6 @@ export default function TimeSheet({
 
       <HeaderSection header={header} onChange={updateHeader} />
 
-     
-
       {amEnabled && (
         <TimeSheetTable
           title="AM TIME SHEET"
@@ -419,7 +414,6 @@ function TimeSheetTable({
             <th>Start</th>
             <th>Break</th>
             <th>End</th>
-            <th>Paid Amount</th>
             <th>Note</th>
             <th className="no-print">X</th>
           </tr>
@@ -439,7 +433,13 @@ function TimeSheetTable({
               </td>
 
               <td>
+                <datalist id={`employee-${shift}-${index}`}>
+                  {getEmployeesForPosition(row.position).map((employee) => (
+                    <option key={employee.name} value={employee.name} />
+                  ))}
+                </datalist>
                 <input
+                  list={`employee-${shift}-${index}`}
                   value={row.name}
                   onChange={(e) =>
                     onChange(shift, index, "name", e.target.value)
@@ -493,15 +493,6 @@ function TimeSheetTable({
                   }
                   onBlur={(e) =>
                     onChange(shift, index, "end", formatTime(e.target.value))
-                  }
-                />
-              </td>
-
-              <td>
-                <input
-                  value={row.paidAmount}
-                  onChange={(e) =>
-                    onChange(shift, index, "paidAmount", e.target.value)
                   }
                 />
               </td>

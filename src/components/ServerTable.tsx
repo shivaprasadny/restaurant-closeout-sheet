@@ -7,6 +7,10 @@ import {
   num,
 } from "../utils/closeoutCalculations";
 import { capitalizeName } from "../utils/textFormatting";
+import {
+  getCompactEmployeeName,
+  getEmployeesForPosition,
+} from "../data/employees";
 
 /**
  * ServerTable
@@ -80,6 +84,11 @@ export default function ServerTable({
   onBartenderEnabledChange,
   busboyPercent,
 }: ServerTableProps) {
+  const serverListId = `server-names-${title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")}`;
+  const serverNames = getEmployeesForPosition("Waiter");
+
   /**
    * Convert percent strings to numbers.
    */
@@ -293,6 +302,15 @@ const updatedRow = {
         </button>
       </div>
 
+      <datalist id={serverListId}>
+        {serverNames.map((employee) => (
+          <option
+            key={employee.name}
+            value={getCompactEmployeeName(employee.name)}
+          />
+        ))}
+      </datalist>
+
       <table className="server-table">
         <thead>
           <tr>
@@ -329,6 +347,7 @@ const pooledTips = getPooledServerTips(index);
               <tr key={index}>
                 <td>
                   <input
+                    list={serverListId}
                     value={row.name}
                     onChange={(e) =>
                       updateServer(index, "name", e.target.value)

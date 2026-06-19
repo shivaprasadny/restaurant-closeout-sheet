@@ -1,5 +1,6 @@
 import type{ CheckLogRow } from "../types/closeout.types";
 import SectionHeader from "./SectionHeader";
+import { allEmployeeNames } from "../data/employees";
 
 /**
  * Check Log Table
@@ -31,6 +32,8 @@ export default function CheckLogTable({
   onRemove,
   onChange,
 }: Props) {
+  const employeeListId = `check-log-names-${shift.toLowerCase()}`;
+
   return (
     <div className="box compact-section">
       <SectionHeader
@@ -38,6 +41,12 @@ export default function CheckLogTable({
         buttonText="+ Add Check Log"
         onAdd={onAdd}
       />
+
+      <datalist id={employeeListId}>
+        {allEmployeeNames.map((employeeName) => (
+          <option key={employeeName} value={employeeName} />
+        ))}
+      </datalist>
 
       <table>
         <thead>
@@ -54,6 +63,7 @@ export default function CheckLogTable({
             <tr key={index}>
               <td>
                 <input
+                  list={employeeListId}
                   value={row.name}
                   onChange={(e) =>
                     onChange(shift, index, "name", e.target.value)

@@ -1,4 +1,8 @@
 import type { TipRow } from "../types/closeout.types";
+import {
+  getCompactEmployeeName,
+  getEmployeesForPosition,
+} from "../data/employees";
 
 /**
  * TipTable
@@ -63,6 +67,9 @@ onAutoSplitChange,
   
 }: Props) {
   const isBusboy = type === "AM_BUSBOY" || type === "PM_BUSBOY";
+  const employeePosition = isBusboy ? "BB" : "Manager";
+  const employeeListId = `tip-names-${type.toLowerCase()}`;
+  const employeeOptions = getEmployeesForPosition(employeePosition);
 
   return (
     <div className="box compact-section">
@@ -119,6 +126,15 @@ onAutoSplitChange,
           + Add
         </button>
       </div>
+
+      <datalist id={employeeListId}>
+        {employeeOptions.map((employee) => (
+          <option
+            key={employee.name}
+            value={getCompactEmployeeName(employee.name)}
+          />
+        ))}
+      </datalist>
 
       <table>
         <thead>
@@ -177,6 +193,7 @@ onAutoSplitChange,
 
 <td>
   <input
+    list={employeeListId}
     value={row.name}
     onChange={(e) =>
       onChange(type, index, "name", e.target.value)

@@ -697,6 +697,7 @@ function updateHouseCharge(
 <HeaderSection
   header={header}
   onChange={updateHeader}
+  compactManagerNames
 />
 
 
