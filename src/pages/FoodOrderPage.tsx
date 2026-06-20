@@ -18,11 +18,14 @@ type OrderItem = {
 };
 
 type OrderLocation = "" | "uptown" | "downtown";
+type DeliveryPreference = "next-available" | "next-day" | "choose-date";
 
 type FoodOrderDraft = {
   location: OrderLocation;
   date: string;
   day: string;
+  deliveryPreference: DeliveryPreference;
+  deliveryDate: string;
   orderedBy: string;
   sections: Record<OrderCategory, OrderItem[]>;
 };
@@ -122,6 +125,14 @@ function formatMessageDate(date: string): string {
   });
 }
 
+function getNextDay(date: string): string {
+  if (!date) return "";
+
+  const nextDay = new Date(`${date}T00:00:00`);
+  nextDay.setDate(nextDay.getDate() + 1);
+  return nextDay.toISOString().split("T")[0];
+}
+
 function createDefaultDraft(): FoodOrderDraft {
   const date = new Date().toISOString().split("T")[0];
 
@@ -129,6 +140,8 @@ function createDefaultDraft(): FoodOrderDraft {
     location: "",
     date,
     day: getDay(date),
+    deliveryPreference: "next-available",
+    deliveryDate: "",
     orderedBy: "",
     sections: {
       vegetables: makeDefaultItems(
@@ -191,6 +204,12 @@ function loadDraft(): FoodOrderDraft {
           : "",
       date: parsed.date ?? defaultDraft.date,
       day: parsed.day ?? getDay(parsed.date ?? defaultDraft.date),
+      deliveryPreference:
+        parsed.deliveryPreference === "next-day" ||
+        parsed.deliveryPreference === "choose-date"
+          ? parsed.deliveryPreference
+          : "next-available",
+      deliveryDate: parsed.deliveryDate ?? "",
       orderedBy: capitalizeName(parsed.orderedBy ?? ""),
       sections: {
         vegetables: mergeSavedItems(
@@ -224,7 +243,12 @@ export default function FoodOrderPage({ onBack }: Props) {
   }, [draft]);
 
   function updateHeader(
-    field: "location" | "date" | "orderedBy",
+    field:
+      | "location"
+      | "date"
+      | "deliveryPreference"
+      | "deliveryDate"
+      | "orderedBy",
     value: string
   ) {
     setDraft((current) => {
@@ -234,6 +258,19 @@ export default function FoodOrderPage({ onBack }: Props) {
 
       if (field === "orderedBy") {
         return { ...current, [field]: capitalizeName(value) };
+      }
+
+      if (field === "deliveryPreference") {
+        return {
+          ...current,
+          deliveryPreference: value as DeliveryPreference,
+          deliveryDate:
+            value === "choose-date" ? current.deliveryDate : "",
+        };
+      }
+
+      if (field === "deliveryDate") {
+        return { ...current, deliveryDate: value };
       }
 
       return { ...current, [field]: value as OrderLocation };
@@ -315,6 +352,12 @@ export default function FoodOrderPage({ onBack }: Props) {
               )}`
           )
         : ["• No items entered"];
+    const deliveryText =
+      draft.deliveryPreference === "next-day"
+        ? `Next Day (${formatMessageDate(getNextDay(draft.date))})`
+        : draft.deliveryPreference === "choose-date"
+          ? formatMessageDate(draft.deliveryDate)
+          : "Next Available";
 
     return [
       "🍽️ Don Giovanni Restaurant",
@@ -322,7 +365,8 @@ export default function FoodOrderPage({ onBack }: Props) {
       `🏠 ${location.address}`,
       "",
       `${sectionDetails[category].emoji} ${sectionDetails[category].messageTitle}`,
-      `📅 ${formatMessageDate(draft.date)} • ${draft.day}`,
+      `📝 Order placed: ${formatMessageDate(draft.date)} • ${draft.day}`,
+      `🚚 Requested delivery: ${deliveryText}`,
       `👤 Ordered by: ${draft.orderedBy || "-"}`,
       "",
       ...orderLines,
@@ -336,6 +380,12 @@ export default function FoodOrderPage({ onBack }: Props) {
 
     if (!draft.location) missingFields.push("Location");
     if (!draft.orderedBy.trim()) missingFields.push("Ordered By");
+    if (
+      draft.deliveryPreference === "choose-date" &&
+      !draft.deliveryDate
+    ) {
+      missingFields.push("Delivery Date");
+    }
 
     if (missingFields.length > 0) {
       window.alert(
@@ -344,7 +394,9 @@ export default function FoodOrderPage({ onBack }: Props) {
 
       const fieldId = !draft.location
         ? "food-order-location"
-        : "food-order-ordered-by";
+        : !draft.orderedBy.trim()
+          ? "food-order-ordered-by"
+          : "food-order-delivery-date";
       document.getElementById(fieldId)?.focus();
       return false;
     }
@@ -464,6 +516,35 @@ export default function FoodOrderPage({ onBack }: Props) {
           Day
           <input value={draft.day} readOnly />
         </label>
+
+        <label>
+          Requested Delivery
+          <select
+            value={draft.deliveryPreference}
+            onChange={(event) =>
+              updateHeader("deliveryPreference", event.target.value)
+            }
+          >
+            <option value="next-available">Next Available</option>
+            <option value="next-day">Next Day</option>
+            <option value="choose-date">Choose Date</option>
+          </select>
+        </label>
+
+        {draft.deliveryPreference === "choose-date" && (
+          <label>
+            Delivery Date
+            <input
+              id="food-order-delivery-date"
+              type="date"
+              min={draft.date}
+              value={draft.deliveryDate}
+              onChange={(event) =>
+                updateHeader("deliveryDate", event.target.value)
+              }
+            />
+          </label>
+        )}
 
         <label>
           Ordered By
