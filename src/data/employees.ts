@@ -54,7 +54,7 @@ export const employees: Employee[] = [
   { name: "Mark De Jesus", positions: ["BB"] },
   { name: "Oscar Baten", positions: ["Pizza", "BB"] },
   { name: "Luis Chiqui", positions: ["Cook"] },
-  { name: "Luis Gordillo", positions: ["BB"] },
+  { name: "Luis Gordillo", positions: ["Cook"] },
   { name: "Uche Kalu", positions: ["Pizza"] },
   { name: "Rolando Lopez", positions: ["Pizza"] },
   { name: "Edgar Sanchez Lopez", positions: ["Porter", "Dish"] },
