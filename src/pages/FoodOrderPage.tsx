@@ -112,6 +112,16 @@ function getDay(date: string): string {
     .toUpperCase();
 }
 
+function formatMessageDate(date: string): string {
+  if (!date) return "";
+
+  return new Date(`${date}T00:00:00`).toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
 function createDefaultDraft(): FoodOrderDraft {
   const date = new Date().toISOString().split("T")[0];
 
@@ -312,7 +322,7 @@ export default function FoodOrderPage({ onBack }: Props) {
       `🏠 ${location.address}`,
       "",
       `${sectionDetails[category].emoji} ${sectionDetails[category].messageTitle}`,
-      `📅 ${draft.date} • ${draft.day}`,
+      `📅 ${formatMessageDate(draft.date)} • ${draft.day}`,
       `👤 Ordered by: ${draft.orderedBy || "-"}`,
       "",
       ...orderLines,
@@ -321,7 +331,7 @@ export default function FoodOrderPage({ onBack }: Props) {
     ].join("\n");
   }
 
-  async function copySection(category: OrderCategory) {
+  function validateMessageFields(): boolean {
     const missingFields: string[] = [];
 
     if (!draft.location) missingFields.push("Location");
@@ -336,11 +346,13 @@ export default function FoodOrderPage({ onBack }: Props) {
         ? "food-order-location"
         : "food-order-ordered-by";
       document.getElementById(fieldId)?.focus();
-      return;
+      return false;
     }
 
-    const message = createMessage(category);
+    return true;
+  }
 
+  async function writeToClipboard(message: string) {
     try {
       await navigator.clipboard.writeText(message);
     } catch {
@@ -351,8 +363,41 @@ export default function FoodOrderPage({ onBack }: Props) {
       document.execCommand("copy");
       textArea.remove();
     }
+  }
+
+  async function copySection(category: OrderCategory) {
+    if (!validateMessageFields()) return;
+
+    await writeToClipboard(createMessage(category));
 
     setCopiedSection(category);
+    window.setTimeout(() => setCopiedSection(null), 1800);
+  }
+
+  async function shareSection(category: OrderCategory) {
+    if (!validateMessageFields()) return;
+
+    const message = createMessage(category);
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: sectionDetails[category].title,
+          text: message,
+        });
+        return;
+      } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") {
+          return;
+        }
+      }
+    }
+
+    await writeToClipboard(message);
+    setCopiedSection(category);
+    window.alert(
+      "Sharing is not available in this browser, so the message was copied."
+    );
     window.setTimeout(() => setCopiedSection(null), 1800);
   }
 
@@ -449,6 +494,7 @@ export default function FoodOrderPage({ onBack }: Props) {
           onAdd={addCustomItem}
           onRemove={removeCustomItem}
           onCopy={copySection}
+          onShare={shareSection}
         />
       ))}
 
@@ -478,6 +524,7 @@ type OrderSectionProps = {
   onAdd: (category: OrderCategory) => void;
   onRemove: (category: OrderCategory, id: string) => void;
   onCopy: (category: OrderCategory) => void;
+  onShare: (category: OrderCategory) => void;
 };
 
 function OrderSection({
@@ -488,6 +535,7 @@ function OrderSection({
   onAdd,
   onRemove,
   onCopy,
+  onShare,
 }: OrderSectionProps) {
   return (
     <section className={`order-section order-section-${category}`}>
@@ -503,6 +551,13 @@ function OrderSection({
             onClick={() => onCopy(category)}
           >
             {copied ? "Copied!" : "Copy Message"}
+          </button>
+          <button
+            type="button"
+            className="share-order-btn"
+            onClick={() => onShare(category)}
+          >
+            Share
           </button>
         </div>
       </header>

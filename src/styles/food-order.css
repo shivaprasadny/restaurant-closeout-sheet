@@ -113,6 +113,10 @@
   background: #177245;
 }
 
+.share-order-btn {
+  background: #2563eb;
+}
+
 .order-column-labels,
 .order-item-row {
   display: grid;
@@ -246,7 +250,7 @@
 
   .order-section-actions {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(3, 1fr);
   }
 
   .order-column-labels {
