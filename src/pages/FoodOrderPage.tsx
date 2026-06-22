@@ -6,6 +6,9 @@ import {
 } from "../data/orderItems";
 import { capitalizeName } from "../utils/textFormatting";
 import "../styles/food-order.css";
+import AppNavigation, {
+  type NavigationPage,
+} from "../components/AppNavigation";
 
 type OrderUnit = "count" | "case" | "kg" | "lb";
 
@@ -31,7 +34,7 @@ type FoodOrderDraft = {
 };
 
 type Props = {
-  onBack: () => void;
+  onNavigate: (page: NavigationPage) => void;
 };
 
 const STORAGE_KEY = "restaurant-food-order-draft-v1";
@@ -233,7 +236,7 @@ function unitLabel(unit: OrderUnit, quantity: string): string {
   return unit;
 }
 
-export default function FoodOrderPage({ onBack }: Props) {
+export default function FoodOrderPage({ onNavigate }: Props) {
   const [draft, setDraft] = useState<FoodOrderDraft>(loadDraft);
   const [copiedSection, setCopiedSection] =
     useState<OrderCategory | null>(null);
@@ -466,14 +469,13 @@ export default function FoodOrderPage({ onBack }: Props) {
 
   return (
     <main className="food-order-page">
-      <header className="food-order-toolbar no-print">
-        <button type="button" onClick={onBack}>
-          ← Back to Close-Out
-        </button>
-        <button type="button" onClick={() => window.print()}>
-          Print Order
-        </button>
-      </header>
+      <AppNavigation
+        activePage="food-order"
+        onNavigate={onNavigate}
+        onPrint={() => window.print()}
+        printLabel="Print Order"
+        saveNotice="Saved automatically"
+      />
 
       <section className="food-order-heading">
         <div>

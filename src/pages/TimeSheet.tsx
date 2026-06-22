@@ -4,6 +4,9 @@ import type { HeaderData } from "../types/closeout.types";
 import { capitalizeName } from "../utils/textFormatting";
 import { getEmployeesForPosition } from "../data/employees";
 import "../styles/timesheet.css";
+import AppNavigation, {
+  type NavigationPage,
+} from "../components/AppNavigation";
 
 /* One row in the time sheet table */
 type TimeSheetRow = {
@@ -166,13 +169,14 @@ function loadDraft(): TimeSheetDraft {
 }
 
 type Props = {
-  onBack: () => void;
+  onNavigate: (page: NavigationPage) => void;
 };
 
 export default function TimeSheet({
-  onBack,
+  onNavigate,
 }: Props) {
   const [initialDraft] = useState(loadDraft);
+  const [saveNotice, setSaveNotice] = useState("");
 
   /* Header uses the same HeaderSection as Closeout page */
   const [header, setHeader] = useState<HeaderData>(initialDraft.header);
@@ -198,6 +202,14 @@ export default function TimeSheet({
     };
 
     localStorage.setItem(STORAGE_KEY, JSON.stringify(draft));
+    setSaveNotice("Draft saved");
+
+    const noticeTimer = window.setTimeout(
+      () => setSaveNotice("Saved automatically"),
+      1500
+    );
+
+    return () => window.clearTimeout(noticeTimer);
   }, [header, amEnabled, pmEnabled, amRows, pmRows]);
 
   /* Update header fields */
@@ -284,17 +296,15 @@ export default function TimeSheet({
 
   return (
     <div className="timesheet-page">
+      <AppNavigation
+        activePage="timesheet"
+        onNavigate={onNavigate}
+        onPrint={() => window.print()}
+        printLabel="Print Time Sheet"
+        saveNotice={saveNotice}
+      />
+
       <div className="no-print timesheet-toolbar">
-        <div className="toolbar-left">
-          <button type="button" onClick={onBack}>
-            ← Back To Close-Out
-          </button>
-
-          <button type="button" onClick={() => window.print()}>
-            Print Time Sheet
-          </button>
-        </div>
-
         <div className="shift-inline-toggle">
           <label>
             <input
@@ -323,7 +333,12 @@ export default function TimeSheet({
         </h1>
       </div>
 
-      <HeaderSection header={header} onChange={updateHeader} />
+      <HeaderSection
+        header={header}
+        onChange={updateHeader}
+        amEnabled={amEnabled}
+        pmEnabled={pmEnabled}
+      />
 
       {amEnabled && (
         <TimeSheetTable
@@ -384,11 +399,43 @@ function TimeSheetTable({
   onDuplicate,
   onRemove,
 }: TimeSheetTableProps) {
+  function focusNextInput(event: React.KeyboardEvent<HTMLTableElement>) {
+    if (event.key !== "Enter") return;
+
+    const target = event.target;
+    if (!(target instanceof HTMLInputElement)) return;
+
+    const currentCell = target.closest("td");
+    const currentRow = target.closest("tr");
+    const nextRow = currentRow?.nextElementSibling;
+
+    if (
+      !currentCell ||
+      !(nextRow instanceof HTMLTableRowElement)
+    ) {
+      return;
+    }
+
+    const columnIndex = currentCell.cellIndex;
+    const nextInput =
+      nextRow.cells[columnIndex]?.querySelector<HTMLInputElement>(
+        "input:not([readonly])"
+      );
+
+    if (nextInput) {
+      event.preventDefault();
+      nextInput.focus();
+      nextInput.select();
+    }
+  }
+
   return (
-    <section className="timesheet-section">
+    <section
+      className={`timesheet-section timesheet-section-${shift.toLowerCase()}`}
+    >
       <h2>{title}</h2>
 
-      <table className="timesheet-table">
+      <table className="timesheet-table" onKeyDown={focusNextInput}>
         <thead>
           <tr>
             <th className="no-print">+</th>
@@ -404,7 +451,10 @@ function TimeSheetTable({
 
         <tbody>
           {rows.map((row, index) => (
-            <tr key={`${shift}-${index}`}>
+            <tr
+              key={`${shift}-${index}`}
+              className={row.name.trim() ? "timesheet-row-entered" : ""}
+            >
               <td className="no-print">
                 <button
                   type="button"

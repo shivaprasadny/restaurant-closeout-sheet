@@ -43,8 +43,10 @@ export default function HouseChargeTable({
   onRemove,
   onChange,
 }: Props) {
+  const shiftClass = shift === "AM" ? "shift-card-am" : "shift-card-pm";
+
   return (
-    <div className="box compact-section">
+    <div className={`box compact-section ${shiftClass}`}>
       <SectionHeader
         title={title}
         buttonText="+ Add Company"

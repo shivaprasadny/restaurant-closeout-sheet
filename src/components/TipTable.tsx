@@ -67,12 +67,15 @@ onAutoSplitChange,
   
 }: Props) {
   const isBusboy = type === "AM_BUSBOY" || type === "PM_BUSBOY";
+  const shiftClass = type.startsWith("AM")
+    ? "shift-card-am"
+    : "shift-card-pm";
   const employeePosition = isBusboy ? "BB" : "Manager";
   const employeeListId = `tip-names-${type.toLowerCase()}`;
   const employeeOptions = getEmployeesForPosition(employeePosition);
 
   return (
-    <div className="box compact-section">
+    <div className={`box compact-section ${shiftClass}`}>
       <div className="section-title-row">
         <h2>{title}</h2>
 

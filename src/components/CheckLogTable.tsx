@@ -33,9 +33,10 @@ export default function CheckLogTable({
   onChange,
 }: Props) {
   const employeeListId = `check-log-names-${shift.toLowerCase()}`;
+  const shiftClass = shift === "AM" ? "shift-card-am" : "shift-card-pm";
 
   return (
-    <div className="box compact-section">
+    <div className={`box compact-section ${shiftClass}`}>
       <SectionHeader
         title={title}
         buttonText="+ Add Check Log"

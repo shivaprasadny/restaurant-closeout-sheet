@@ -1,5 +1,6 @@
 import { useState,useEffect } from "react";
 import "../index.css";
+import "../styles/screen-ux.css";
 
 /**
  * Main page for the Restaurant Close-Out app.
@@ -53,6 +54,7 @@ import CheckLogTable from "../components/CheckLogTable";
 import HeaderSection from "../components/HeaderSection";
 import TimeSheet from "./TimeSheet";
 import FoodOrderPage from "./FoodOrderPage";
+import AppNavigation from "../components/AppNavigation";
 
 type AppPage = "closeout" | "timesheet" | "food-order";
 
@@ -102,6 +104,7 @@ const [header, setHeader] = useState<HeaderData>({
 
 
 const [loadedFromStorage, setLoadedFromStorage] = useState(false);
+const [saveNotice, setSaveNotice] = useState("");
 const [totalCreditCardTips, setTotalCreditCardTips] = useState("");
 // Server tip out percent for bar/bartender.
 // Default is 8%, user can change it.
@@ -283,6 +286,14 @@ useEffect(() => {
   };
 
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  setSaveNotice("Draft saved");
+
+  const noticeTimer = window.setTimeout(
+    () => setSaveNotice("Saved automatically"),
+    1500
+  );
+
+  return () => window.clearTimeout(noticeTimer);
 }, [
   loadedFromStorage,
   header,
@@ -663,11 +674,11 @@ function updateHouseCharge(
 
 
   if (page === "timesheet") {
-    return <TimeSheet onBack={() => setPage("closeout")} />;
+    return <TimeSheet onNavigate={setPage} />;
   }
 
   if (page === "food-order") {
-    return <FoodOrderPage onBack={() => setPage("closeout")} />;
+    return <FoodOrderPage onNavigate={setPage} />;
   }
 
 
@@ -677,29 +688,13 @@ function updateHouseCharge(
 
   return (
     <div>
-     <div className="no-print app-header">
-  <h1>Don Giovanni Restaurant</h1>
-
-  <div className="app-actions">
-    <button
-      type="button"
-      className="no-print"
-      onClick={() => setPage("food-order")}
-    >
-      Food Order
-    </button>
-    <button
-      type="button"
-      className="no-print"
-      onClick={() => setPage("timesheet")}
-    >
-      Open Time Sheet
-    </button>
-    <button type="button" onClick={() => window.print()}>
-      Print Close-Out Sheet
-    </button>
-  </div>
-</div>
+      <AppNavigation
+        activePage="closeout"
+        onNavigate={setPage}
+        onPrint={() => window.print()}
+        printLabel="Print Close-Out"
+        saveNotice={saveNotice}
+      />
 
       {/* PAGE 1 */}
       <main className="sheet">
@@ -738,6 +733,8 @@ function updateHouseCharge(
   header={header}
   onChange={updateHeader}
   compactManagerNames
+  amEnabled={amEnabled}
+  pmEnabled={pmEnabled}
 />
 
 

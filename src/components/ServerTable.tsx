@@ -84,6 +84,11 @@ export default function ServerTable({
   onBartenderEnabledChange,
   busboyPercent,
 }: ServerTableProps) {
+  const shiftClass = title.startsWith("AM")
+    ? "shift-card-am"
+    : title.startsWith("PM")
+      ? "shift-card-pm"
+      : "";
   const serverListId = `server-names-${title
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")}`;
@@ -251,7 +256,7 @@ const updatedRow = {
   }
 
   return (
-    <section className="box compact-section">
+    <section className={`box compact-section ${shiftClass}`}>
       <div className="section-title-row server-header-row">
         <h2>{title}</h2>
 

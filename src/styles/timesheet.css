@@ -7,8 +7,7 @@
   page: timesheet;
 }
 
-.timesheet-page,
-.timesheet-page * {
+.timesheet-page {
   color: #000;
 }
 
@@ -145,6 +144,124 @@
   color: #900;
 }
 
+@media screen {
+  .timesheet-page {
+    border-radius: 12px;
+    box-shadow: 0 12px 30px rgb(15 23 42 / 10%);
+  }
+
+  .timesheet-toolbar {
+    justify-content: flex-end;
+    padding: 8px 12px;
+    border: 1px solid #d7dee7;
+    border-radius: 9px;
+    background: #f8fafc;
+  }
+
+  .timesheet-title-row {
+    border-color: #cbd5e1;
+    border-radius: 9px;
+    background: linear-gradient(135deg, #f8fafc, #eef2f7);
+  }
+
+  .timesheet-page .info-grid {
+    padding: 12px;
+    border: 1px solid #d7dee7;
+    border-radius: 9px;
+    background: #fff;
+  }
+
+  .timesheet-section {
+    overflow: auto;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 4px 14px rgb(15 23 42 / 7%);
+    scrollbar-color: #94a3b8 #e2e8f0;
+    scrollbar-width: thin;
+  }
+
+  .timesheet-section-am {
+    border-top: 5px solid #f59e0b;
+  }
+
+  .timesheet-section-pm {
+    border-top: 5px solid #6366f1;
+  }
+
+  .timesheet-section h2 {
+    position: sticky;
+    left: 0;
+    z-index: 8;
+    margin: 0;
+    padding: 10px;
+  }
+
+  .timesheet-section-am h2 {
+    background: #fffbeb;
+    color: #92400e;
+  }
+
+  .timesheet-section-pm h2 {
+    background: #eef2ff;
+    color: #3730a3;
+  }
+
+  .timesheet-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 6;
+    background: #e9eef5;
+    box-shadow: inset 0 -1px #64748b;
+  }
+
+  .timesheet-table th:nth-child(2),
+  .timesheet-table td:nth-child(2) {
+    position: sticky;
+    left: 0;
+    z-index: 5;
+    background: #fff;
+    box-shadow: 2px 0 5px rgb(15 23 42 / 10%);
+  }
+
+  .timesheet-table thead th:nth-child(2) {
+    z-index: 7;
+    background: #e9eef5;
+  }
+
+  .timesheet-table tbody tr {
+    transition: background 140ms ease;
+  }
+
+  .timesheet-table tbody tr:hover td {
+    background: #eff6ff;
+  }
+
+  .timesheet-table tbody tr:hover td:nth-child(2) {
+    background: #eff6ff;
+  }
+
+  .timesheet-row-entered td {
+    background: #f0fdf4;
+  }
+
+  .timesheet-row-entered td:nth-child(2) {
+    background: #f0fdf4;
+  }
+
+  .timesheet-row-entered td:first-child {
+    box-shadow: inset 4px 0 #22c55e;
+  }
+
+  .timesheet-table input:focus {
+    position: relative;
+    z-index: 2;
+    outline: none;
+    background: #fff;
+    box-shadow: inset 0 0 0 2px #2563eb;
+  }
+}
+
 @media screen and (max-width: 900px) {
   .timesheet-page {
     width: calc(100% - 20px);
@@ -204,7 +321,6 @@
   }
 
   .timesheet-section h2 {
-    position: sticky;
     left: 0;
     width: min(calc(100vw - 24px), 100%);
   }
