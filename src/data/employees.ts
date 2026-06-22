@@ -17,7 +17,7 @@ export type Employee = {
 export const employees: Employee[] = [
   { name: "Shiva Prasad", positions: ["Manager", "Waiter"] },
   { name: "Samrina Tamang", positions: ["Manager", "Waiter"] },
-  { name: "Daria Panlova", positions: ["Manager", "Waiter"] },
+  { name: "Daria Pankova", positions: ["Manager", "Waiter"] },
   { name: "Roi Cohen", positions: ["Manager", "Waiter"] },
   { name: "Eugene Ivanov", positions: ["Manager", "Waiter"] },
   { name: "Julio Rosales", positions: ["Manager", "Waiter"] },
@@ -27,6 +27,8 @@ export const employees: Employee[] = [
   { name: "Edgar Lopez", positions: ["BB"] },
   { name: "Luis Ortiz", positions: ["BB"] },
   { name: "Emma Bellomo", positions: ["Waiter"] },
+  { name: "Wilian Silva", positions: ["Waiter"] },
+
   {
     name: "Abelardo Lopez Sanchez",
     positions: ["Salad", "Porter", "Dish", "Helper"],

@@ -102,6 +102,7 @@ const [header, setHeader] = useState<HeaderData>({
 
 
 const [loadedFromStorage, setLoadedFromStorage] = useState(false);
+const [totalCreditCardTips, setTotalCreditCardTips] = useState("");
 // Server tip out percent for bar/bartender.
 // Default is 8%, user can change it.
 const [amServerTipOutPercent, setAmServerTipOutPercent] = useState("8");
@@ -244,6 +245,7 @@ useEffect(() => {
 
   setAmAutoSplitBusboy(data.amAutoSplitBusboy ?? true);
   setPmAutoSplitBusboy(data.pmAutoSplitBusboy ?? true);
+  setTotalCreditCardTips(data.totalCreditCardTips ?? "");
 
   setLoadedFromStorage(true);
 }, []);
@@ -277,6 +279,7 @@ useEffect(() => {
     pmBartenderEnabled,
     amAutoSplitBusboy,
     pmAutoSplitBusboy,
+    totalCreditCardTips,
   };
 
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
@@ -305,6 +308,7 @@ useEffect(() => {
   pmBartenderEnabled,
   amAutoSplitBusboy,
   pmAutoSplitBusboy,
+  totalCreditCardTips,
 ]);
 
 
@@ -397,6 +401,46 @@ const pmBusboyPools = pmServers.reduce(
   },
   { cc: 0, cash: 0 }
 );
+
+const amServerCcTipsTotal = amEnabled
+  ? amServers.reduce((total, row) => total + num(row.ccTips), 0)
+  : 0;
+
+const pmServerCcTipsTotal = pmEnabled
+  ? pmServers.reduce((total, row) => total + num(row.ccTips), 0)
+  : 0;
+
+const busboyCcTipsTotal =
+  (amEnabled
+    ? amBusboys.reduce((total, row) => total + num(row.ccTips), 0)
+    : 0) +
+  (pmEnabled
+    ? pmBusboys.reduce((total, row) => total + num(row.ccTips), 0)
+    : 0);
+
+const managerCcTipsTotal =
+  (amEnabled
+    ? amManagers.reduce((total, row) => total + num(row.ccTips), 0)
+    : 0) +
+  (pmEnabled
+    ? pmManagers.reduce((total, row) => total + num(row.ccTips), 0)
+    : 0);
+
+const distributedCcTipsTotal =
+  amServerCcTipsTotal +
+  pmServerCcTipsTotal +
+  busboyCcTipsTotal +
+  managerCcTipsTotal;
+
+const ccTipsDifference =
+  num(totalCreditCardTips) - distributedCcTipsTotal;
+
+const ccTipsStatus =
+  Math.abs(ccTipsDifference) < 0.01
+    ? "perfect"
+    : ccTipsDifference > 0
+      ? "short"
+      : "over";
 
 
 
@@ -634,7 +678,7 @@ function updateHouseCharge(
   return (
     <div>
      <div className="no-print app-header">
-  <h1>Restaurant Close-Out Sheet</h1>
+  <h1>Don Giovanni Restaurant</h1>
 
   <div className="app-actions">
     <button
@@ -662,27 +706,8 @@ function updateHouseCharge(
 
 
 
-<div className="top-title title-with-restaurant">
-  <div className="restaurant-title-field no-print">
-    <input
-      list="restaurant-list"
-      value={header.restaurantName}
-      placeholder="Restaurant Name"
-      onChange={(e) =>
-        updateHeader("restaurantName", e.target.value)
-      }
-    />
-
-    <datalist id="restaurant-list">
-      <option value="DON GIOVANNI" />
-    </datalist>
-  </div>
-
-  <div className="print-restaurant-name">
-    {header.restaurantName}
-  </div>
-
-  <div>DAILY CLOSE OUT SHEET</div>
+<div className="top-title closeout-brand-title">
+  DON GIOVANNI RESTAURANT — DAILY CLOSE-OUT SHEET
 </div>
 
 <div className="shift-toggle-row no-print">
@@ -720,6 +745,8 @@ function updateHouseCharge(
          <SalesSection
   salesRows={salesRows}
   onChange={updateSales}
+  amEnabled={amEnabled}
+  pmEnabled={pmEnabled}
   takeOutTotal={money(takeOutTotal)}
   amServerTotal={money(amServerTotal)}
   pmServerTotal={money(pmServerTotal)}
@@ -781,6 +808,32 @@ function updateHouseCharge(
         )}
       </label>
     ))}
+  </div>
+
+  <div className="cc-tip-checker no-print">
+    <label>
+      Total Credit Card Tips
+      <input
+        inputMode="decimal"
+        value={totalCreditCardTips}
+        onChange={(e) => setTotalCreditCardTips(e.target.value)}
+      />
+    </label>
+
+    <div className="cc-tip-calculated">
+      Distributed CC Tips
+      <strong>${money(distributedCcTipsTotal)}</strong>
+    </div>
+
+    {totalCreditCardTips.trim() && (
+      <div className={`cc-tip-status cc-tip-status-${ccTipsStatus}`}>
+        {ccTipsStatus === "perfect" && "✓ Perfect — CC tips match"}
+        {ccTipsStatus === "short" &&
+          `Short by $${money(ccTipsDifference)}`}
+        {ccTipsStatus === "over" &&
+          `Over by $${money(Math.abs(ccTipsDifference))}`}
+      </div>
+    )}
   </div>
 </div>
         </section>

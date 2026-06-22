@@ -318,27 +318,9 @@ export default function TimeSheet({
 
 
       <div className="timesheet-title-row">
-        <label className="restaurant-title-editor">
-          <span>Restaurant Name</span>
-          <input
-            list="restaurant-name-list"
-            value={header.restaurantName}
-            onChange={(e) =>
-              updateHeader("restaurantName", e.target.value)
-            }
-          />
-
-          <datalist id="restaurant-name-list">
-            <option value="Don Giovanni" />
-          </datalist>
-        </label>
-
-        <div className="timesheet-print-heading">
-          <span className="timesheet-restaurant-name">
-            {header.restaurantName || "RESTAURANT NAME"}
-          </span>
-          <h1 className="sheet-title">EMPLOYEE TIME SHEET</h1>
-        </div>
+        <h1 className="sheet-title">
+          DON GIOVANNI RESTAURANT — EMPLOYEE TIME SHEET
+        </h1>
       </div>
 
       <HeaderSection header={header} onChange={updateHeader} />

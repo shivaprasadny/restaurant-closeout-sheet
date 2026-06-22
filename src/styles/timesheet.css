@@ -45,41 +45,19 @@
 }
 
 .timesheet-title-row {
-  display: grid;
-  grid-template-columns: minmax(280px, 1fr) 1.4fr;
-  align-items: center;
-  gap: 12px;
   margin-bottom: 12px;
-}
-
-.restaurant-title-editor {
-  display: grid;
-  grid-template-columns: 140px 1fr;
-  align-items: center;
-  gap: 8px;
-  font-weight: bold;
-}
-
-.restaurant-title-editor input {
-  height: 28px;
-  border: 1px solid #000;
-  font-size: 16px;
-}
-
-.timesheet-print-heading {
+  padding: 12px;
+  border: 2px solid #000;
   text-align: center;
 }
 
 .sheet-title {
   margin: 0;
   text-align: center;
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 700;
-  letter-spacing: 1px;
-}
-
-.timesheet-restaurant-name {
-  display: none;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 
 .timesheet-section {
@@ -174,10 +152,6 @@
     padding: 16px;
   }
 
-  .timesheet-title-row {
-    grid-template-columns: 1fr;
-  }
-
   .timesheet-section {
     overflow-x: auto;
     overscroll-behavior-inline: contain;
@@ -224,16 +198,9 @@
     height: 22px;
   }
 
-  .restaurant-title-editor {
-    grid-template-columns: 1fr;
-  }
-
-  .restaurant-title-editor input {
-    height: 44px;
-  }
-
   .sheet-title {
-    font-size: 23px;
+    font-size: 17px;
+    white-space: normal;
   }
 
   .timesheet-section h2 {
@@ -272,26 +239,14 @@
   }
 
   .timesheet-title-row {
-    display: block;
     margin-bottom: 10px;
-  }
-
-  .restaurant-title-editor {
-    display: none;
-  }
-
-  .timesheet-restaurant-name {
-    display: block;
-    margin-bottom: 2px;
-    font-size: 22px;
-    font-weight: 700;
-    line-height: 1.1;
-    text-transform: uppercase;
+    padding: 8px;
   }
 
   .timesheet-title-row .sheet-title {
-    font-size: 24px;
+    font-size: 20px;
     line-height: 1.1;
+    white-space: nowrap;
   }
 
   .timesheet-page .timesheet-table {

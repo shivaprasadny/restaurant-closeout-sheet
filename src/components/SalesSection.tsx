@@ -20,6 +20,8 @@ import type { SalesRow } from "../types/closeout.types";
 type Props = {
   salesRows: SalesRow[];
   onChange: (index: number, field: keyof SalesRow, value: string) => void;
+  amEnabled: boolean;
+  pmEnabled: boolean;
 
   // Take Out calculated total
   takeOutTotal: string;
@@ -43,6 +45,8 @@ type Props = {
 export default function SalesSection({
   salesRows,
   onChange,
+  amEnabled,
+  pmEnabled,
   takeOutTotal,
   amServerTotal,
   pmServerTotal,
@@ -54,16 +58,25 @@ export default function SalesSection({
   pmSalesTotal,
   grandSalesTotal,
 }: Props) {
+  const salesTitle =
+    amEnabled && pmEnabled
+      ? "AM / PM SALES"
+      : amEnabled
+        ? "AM SALES"
+        : pmEnabled
+          ? "PM SALES"
+          : "SALES";
+
   return (
     <div className="box">
-      <h2>AM / PM SALES</h2>
+      <h2>{salesTitle}</h2>
 
       <table>
         <thead>
           <tr>
             <th>Sales Type</th>
-            <th>AM</th>
-            <th>PM</th>
+            {amEnabled && <th>AM</th>}
+            {pmEnabled && <th>PM</th>}
             <th>Total</th>
           </tr>
         </thead>
@@ -79,34 +92,38 @@ export default function SalesSection({
                 <td>{row.label}</td>
 
                 {/* AM column */}
-                <td>
-                  <input
-                    value={
-                      isServer
-                        ? amServerTotal
-                        : isHouseCharge
-                        ? amHouseChargeBase
-                        : row.am
-                    }
-                    readOnly={isServer || isHouseCharge}
-                    onChange={(e) => onChange(index, "am", e.target.value)}
-                  />
-                </td>
+                {amEnabled && (
+                  <td>
+                    <input
+                      value={
+                        isServer
+                          ? amServerTotal
+                          : isHouseCharge
+                            ? amHouseChargeBase
+                            : row.am
+                      }
+                      readOnly={isServer || isHouseCharge}
+                      onChange={(e) => onChange(index, "am", e.target.value)}
+                    />
+                  </td>
+                )}
 
                 {/* PM column */}
-                <td>
-                  <input
-                    value={
-                      isServer
-                        ? pmServerTotal
-                        : isHouseCharge
-                        ? pmHouseChargeBase
-                        : row.pm
-                    }
-                    readOnly={isServer || isHouseCharge}
-                    onChange={(e) => onChange(index, "pm", e.target.value)}
-                  />
-                </td>
+                {pmEnabled && (
+                  <td>
+                    <input
+                      value={
+                        isServer
+                          ? pmServerTotal
+                          : isHouseCharge
+                            ? pmHouseChargeBase
+                            : row.pm
+                      }
+                      readOnly={isServer || isHouseCharge}
+                      onChange={(e) => onChange(index, "pm", e.target.value)}
+                    />
+                  </td>
+                )}
 
                 {/* Total column */}
                 <td>
@@ -131,8 +148,8 @@ export default function SalesSection({
           {/* Final total row */}
           <tr className="total-row">
             <td>Total</td>
-            <td>{amSalesTotal}</td>
-            <td>{pmSalesTotal}</td>
+            {amEnabled && <td>{amSalesTotal}</td>}
+            {pmEnabled && <td>{pmSalesTotal}</td>}
             <td>{grandSalesTotal}</td>
           </tr>
         </tbody>
