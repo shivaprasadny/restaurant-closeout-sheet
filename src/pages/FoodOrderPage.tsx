@@ -474,6 +474,7 @@ export default function FoodOrderPage({ onNavigate }: Props) {
         onNavigate={onNavigate}
         onPrint={() => window.print()}
         printLabel="Print Order"
+        pdfTitle="Food Order"
         saveNotice="Saved automatically"
       />
 

@@ -31,7 +31,7 @@ export const employees: Employee[] = [
 
   {
     name: "Abelardo Lopez Sanchez",
-    positions: ["Salad", "Porter", "Dish", "Helper"],
+    positions: ["Salad", "Porter", "Dish", "Helper", "Pizza"],
   },
   {
     name: "Paulino Salgado Juarez",
@@ -60,6 +60,8 @@ export const employees: Employee[] = [
   { name: "Uche Kalu", positions: ["Pizza"] },
   { name: "Rolando Lopez", positions: ["Pizza"] },
   { name: "Edgar Sanchez Lopez", positions: ["Porter", "Dish"] },
+  { name: "Jose Antonio", positions: ["BB", "Porter", "Dish"] },
+  { name: "Rosa Lopez", positions: ["Porter", "Dish"] },
 ];
 
 function sortEmployees(employeeList: Employee[]): Employee[] {

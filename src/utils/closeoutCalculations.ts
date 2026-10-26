@@ -1,6 +1,7 @@
 import type {
   ExpenseRow,
   HouseChargeRow,
+  TipRow,
 } from "../types/closeout.types";
 
 import type { SalesRow } from "../types/closeout.types";
@@ -113,6 +114,25 @@ export function getBusboyFloorTipTotal(
 }
 
 /**
+ * Busboy share of the tip pool, decided by the manager.
+ * Blank share counts as 100, so equal shares split the pool evenly.
+ * Busboys without a name get nothing.
+ */
+export const DEFAULT_BUSBOY_SHARE = 100;
+
+function getBusboyShare(row: TipRow): number {
+  if (row.name.trim() === "") return 0;
+  return row.share?.trim() ? num(row.share) : DEFAULT_BUSBOY_SHARE;
+}
+
+export function getBusboyShareRatio(rows: TipRow[], index: number): number {
+  const totalShares = rows.reduce((sum, row) => sum + getBusboyShare(row), 0);
+  if (totalShares <= 0) return 0;
+
+  return getBusboyShare(rows[index]) / totalShares;
+}
+
+/**
  * Remove NY sales tax.
  */
 export function removeTax(amount: number): number {
@@ -139,8 +159,6 @@ export function num(value: string): number {
  */
 export function calculateServerRow(
   row: ServerRow,
-  bartenderEnabled: boolean,
-  bartenderPercent: number,
   busboyPercent: number
 ) {
   const ccSales = num(row.ccSales);
@@ -150,9 +168,8 @@ export function calculateServerRow(
   const ccEstimatedTip = estimateTip(ccSales);
   const cashEstimatedTip = estimateTip(cashSales);
 
-  const bartenderRate = bartenderEnabled
-    ? bartenderPercent / 100
-    : 0;
+  // Each server's own Bar %; blank means no bartender tip-out
+  const bartenderRate = num(row.bartenderPercent ?? "") / 100;
 
   const busboyRate = busboyPercent / 100;
 

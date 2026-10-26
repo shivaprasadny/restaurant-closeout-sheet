@@ -62,9 +62,27 @@
     box-shadow: 0 3px 10px rgb(217 119 6 / 30%);
   }
 
-  .app-navigation-print {
+  .app-navigation-actions {
+    display: flex;
     justify-self: end;
+    gap: 6px;
+  }
+
+  .app-navigation-print {
     background: #2563eb;
+  }
+
+  .app-navigation-email {
+    background: #059669;
+  }
+
+  .app-navigation-pdf {
+    background: #7c3aed;
+  }
+
+  .app-navigation-actions button:disabled {
+    opacity: 0.6;
+    cursor: wait;
   }
 
   .sheet {
@@ -230,8 +248,18 @@
     padding-inline: 10px;
   }
 
-  .app-navigation-print {
+  .app-navigation {
+    grid-template-columns: 1fr;
+  }
+
+  .app-navigation-actions {
+    justify-self: stretch;
+  }
+
+  .app-navigation-actions button {
+    flex: 1;
     min-width: max-content;
+    padding-inline: 8px;
   }
 
   .box table thead th {

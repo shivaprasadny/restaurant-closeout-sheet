@@ -326,6 +326,37 @@ td input {
   font-size: 11px;
   padding: 1px;
 }
+/* Share column in busboy table: − 100% + */
+.busboy-share-col {
+  width: 92px;
+}
+
+.busboy-share-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2px;
+}
+
+.busboy-share-stepper span {
+  min-width: 34px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.busboy-share-stepper button {
+  min-height: 0;
+  padding: 1px 7px;
+  font-size: 13px;
+  line-height: 1.2;
+}
+
+.busboy-share-stepper button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
 /* Notes box inside Day Close Out */
 .closeout-notes {
   width: 200%;

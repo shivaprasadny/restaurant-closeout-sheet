@@ -26,6 +26,7 @@ export function makeRows<T>(count: number, row: T): T[] {
 export const emptyServer: ServerRow = {
   name: "",
   poolGroup: "",
+  bartenderPercent: "",
   total: "",
   food: "",
   alcohol: "",
@@ -46,6 +47,7 @@ export const emptyServer: ServerRow = {
  */
 export const emptyTipRow: TipRow = {
   name: "",
+  share: "",
   houseChargeTips: "",
   ccTips: "",
   floorTips: "",
@@ -112,13 +114,11 @@ export const defaultCloseOutRows: CloseOutRow[] = [
  */
 export const defaultHouseChargeNames = [
   "GrubHub",
-  "Seamless",
   "Delivery.com",
   "Slice",
   "247 Waiter",
   "DoorDash",
   "Uber Eats",
-  "Sharebite",
 ];
 
 /**
@@ -127,6 +127,7 @@ export const defaultHouseChargeNames = [
  */
 export const emptyManagerTipRow: TipRow = {
   name: "",
+  share: "",
   houseChargeTips: "",
   ccTips: "",
   floorTips: "0",

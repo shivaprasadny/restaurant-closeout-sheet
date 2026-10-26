@@ -106,11 +106,6 @@ const [header, setHeader] = useState<HeaderData>({
 const [loadedFromStorage, setLoadedFromStorage] = useState(false);
 const [saveNotice, setSaveNotice] = useState("");
 const [totalCreditCardTips, setTotalCreditCardTips] = useState("");
-// Server tip out percent for bar/bartender.
-// Default is 8%, user can change it.
-const [amServerTipOutPercent, setAmServerTipOutPercent] = useState("8");
-const [pmServerTipOutPercent, setPmServerTipOutPercent] = useState("8");
-
 const [amAutoSplitServerTips, setAmAutoSplitServerTips] = useState(true);
 const [pmAutoSplitServerTips, setPmAutoSplitServerTips] = useState(true);
 
@@ -118,10 +113,6 @@ const [pmAutoSplitServerTips, setPmAutoSplitServerTips] = useState(true);
 const [amEnabled, setAmEnabled] = useState(true);
 const [pmEnabled, setPmEnabled] = useState(true);
 
-// Bartender is optional.
-// If checked, manager knows bartender/bar tip-out applies.
-const [amBartenderEnabled, setAmBartenderEnabled] = useState(false);
-const [pmBartenderEnabled, setPmBartenderEnabled] = useState(false);
 
   
  const [amBusboyPercent, setAmBusboyPercent] = useState("23");
@@ -240,12 +231,6 @@ useEffect(() => {
   setAmBusboyPercent(data.amBusboyPercent ?? "23");
   setPmBusboyPercent(data.pmBusboyPercent ?? "23");
 
-  setAmServerTipOutPercent(data.amServerTipOutPercent ?? "8");
-  setPmServerTipOutPercent(data.pmServerTipOutPercent ?? "8");
-
-  setAmBartenderEnabled(data.amBartenderEnabled ?? false);
-  setPmBartenderEnabled(data.pmBartenderEnabled ?? false);
-
   setAmAutoSplitBusboy(data.amAutoSplitBusboy ?? true);
   setPmAutoSplitBusboy(data.pmAutoSplitBusboy ?? true);
   setTotalCreditCardTips(data.totalCreditCardTips ?? "");
@@ -276,10 +261,6 @@ useEffect(() => {
     pmCheckLogs,
     amBusboyPercent,
     pmBusboyPercent,
-    amServerTipOutPercent,
-    pmServerTipOutPercent,
-    amBartenderEnabled,
-    pmBartenderEnabled,
     amAutoSplitBusboy,
     pmAutoSplitBusboy,
     totalCreditCardTips,
@@ -313,10 +294,6 @@ useEffect(() => {
   pmCheckLogs,
   amBusboyPercent,
   pmBusboyPercent,
-  amServerTipOutPercent,
-  pmServerTipOutPercent,
-  amBartenderEnabled,
-  pmBartenderEnabled,
   amAutoSplitBusboy,
   pmAutoSplitBusboy,
   totalCreditCardTips,
@@ -383,8 +360,6 @@ const amBusboyPools = amServers.reduce(
   (totals, row) => {
     const calculated = calculateServerRow(
       row,
-      amBartenderEnabled,
-      num(amServerTipOutPercent),
       num(amBusboyPercent)
     );
 
@@ -400,8 +375,6 @@ const pmBusboyPools = pmServers.reduce(
   (totals, row) => {
     const calculated = calculateServerRow(
       row,
-      pmBartenderEnabled,
-      num(pmServerTipOutPercent),
       num(pmBusboyPercent)
     );
 
@@ -693,6 +666,7 @@ function updateHouseCharge(
         onNavigate={setPage}
         onPrint={() => window.print()}
         printLabel="Print Close-Out"
+        pdfTitle="Close-Out Sheet"
         saveNotice={saveNotice}
       />
 
@@ -839,13 +813,9 @@ function updateHouseCharge(
   title="AM SERVER / WAITER CHECKOUT"
   rows={amServers}
   setRows={setAmServers}
-  tipOutPercent={amServerTipOutPercent}
-  onTipOutPercentChange={setAmServerTipOutPercent}
-  bartenderEnabled={amBartenderEnabled}
   autoSplitTips={amAutoSplitServerTips}
 onAutoSplitTipsChange={setAmAutoSplitServerTips}
   hasBusboy={amHasBusboy}
-  onBartenderEnabledChange={setAmBartenderEnabled}
   busboyPercent={amBusboyPercent}
 />   )}
 {pmEnabled && (
@@ -854,12 +824,8 @@ onAutoSplitTipsChange={setAmAutoSplitServerTips}
   title="PM SERVER / WAITER CHECKOUT"
   rows={pmServers}
   setRows={setPmServers}
-  tipOutPercent={pmServerTipOutPercent}
-  onTipOutPercentChange={setPmServerTipOutPercent}
   autoSplitTips={pmAutoSplitServerTips}
 onAutoSplitTipsChange={setPmAutoSplitServerTips}
-  bartenderEnabled={pmBartenderEnabled}
-  onBartenderEnabledChange={setPmBartenderEnabled}
   hasBusboy={pmHasBusboy}
   busboyPercent={pmBusboyPercent}
 />

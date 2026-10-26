@@ -37,29 +37,14 @@ import {
  * - BB CC Tip
  * - BB Cash Tip
  *
- * Bartender controls:
- * - Hidden in print
- * - Tip Out % default comes from CloseoutPage
- * - CC and Cash totals are calculated from all server rows
+ * Bartender tip-out:
+ * - Each server row has its own Bar % (hidden in print)
  */
 
 type ServerTableProps = {
   title: string;
   rows: ServerRow[];
   setRows: Dispatch<SetStateAction<ServerRow[]>>;
-
-  /**
-   * Bartender tip-out percentage.
-   * Default should be 8 from CloseoutPage.
-   */
-  tipOutPercent: string;
-  onTipOutPercentChange: (value: string) => void;
-
-  /**
-   * If false, bartender calculation becomes 0.
-   */
-  bartenderEnabled: boolean;
-  onBartenderEnabledChange: (value: boolean) => void;
 
   /**
    * Busboy percentage comes from Busboy section.
@@ -75,13 +60,9 @@ export default function ServerTable({
   title,
   rows,
   setRows,
-  tipOutPercent,
-  onTipOutPercentChange,
   hasBusboy,
-  bartenderEnabled,
   autoSplitTips,
   onAutoSplitTipsChange,
-  onBartenderEnabledChange,
   busboyPercent,
 }: ServerTableProps) {
   const shiftClass = title.startsWith("AM")
@@ -97,31 +78,8 @@ export default function ServerTable({
   /**
    * Convert percent strings to numbers.
    */
-  const bartenderPercentNumber = num(tipOutPercent);
   const busboyPercentNumber = num(busboyPercent);
 
-  /**
-   * Calculate bartender totals for the header.
-   */
-  const bartenderTotals = rows.reduce(
-    (totals, row) => {
-    const calculated = calculateServerRow(
-  row,
-  bartenderEnabled,
-  bartenderPercentNumber,
-  hasBusboy ? busboyPercentNumber : 0
-);
-
-      return {
-        cc: totals.cc + calculated.bartenderCc,
-        cash: totals.cash + calculated.bartenderCash,
-      };
-    },
-    {
-      cc: 0,
-      cash: 0,
-    }
-  );
 
 
 
@@ -133,8 +91,6 @@ function getPooledServerTips(index: number) {
 
   const currentCalculated = calculateServerRow(
     currentRow,
-    bartenderEnabled,
-    bartenderPercentNumber,
     hasBusboy ? busboyPercentNumber : 0
   );
 
@@ -162,8 +118,6 @@ function getPooledServerTips(index: number) {
     (totals, row) => {
       const calculated = calculateServerRow(
         row,
-        bartenderEnabled,
-        bartenderPercentNumber,
         hasBusboy ? busboyPercentNumber : 0
       );
 
@@ -189,9 +143,42 @@ function getPooledServerTips(index: number) {
   /**
    * Update only manual fields in a server row.
    */
+  /**
+   * Pooled servers share one Bar %.
+   * - Changing Bar % updates everyone in the same pool.
+   * - Joining a pool takes that pool's Bar %.
+   */
+  function syncPoolBartenderPercent(
+    rows: ServerRow[],
+    index: number,
+    field: keyof ServerRow
+  ): ServerRow[] {
+    if (field !== "bartenderPercent" && field !== "poolGroup") return rows;
+
+    const changedRow = rows[index];
+    const pool = changedRow.poolGroup?.trim().toUpperCase();
+    if (!pool) return rows;
+
+    const isInPool = (row: ServerRow) =>
+      row.poolGroup?.trim().toUpperCase() === pool;
+
+    const poolPercent =
+      field === "bartenderPercent"
+        ? changedRow.bartenderPercent
+        : rows.find(
+            (row, i) => i !== index && isInPool(row) && row.bartenderPercent
+          )?.bartenderPercent ?? changedRow.bartenderPercent;
+
+    if (poolPercent === undefined) return rows;
+
+    return rows.map((row) =>
+      isInPool(row) ? { ...row, bartenderPercent: poolPercent } : row
+    );
+  }
+
   function updateServer(index: number, field: keyof ServerRow, value: string) {
   setRows((prev) =>
-    prev.map((row, i) => {
+    syncPoolBartenderPercent(prev.map((row, i) => {
       if (i !== index) return row;
 
 const cleanValue =
@@ -237,7 +224,7 @@ const updatedRow = {
       }
 
       return updatedRow;
-    })
+    }), index, field)
   );
 }
 
@@ -259,36 +246,6 @@ const updatedRow = {
     <section className={`box compact-section ${shiftClass}`}>
       <div className="section-title-row server-header-row">
         <h2>{title}</h2>
-
-        <div className="server-options no-print">
-          <label className="tip-percent-inline">
-            Tip Out %
-            <input
-              value={tipOutPercent}
-              onChange={(e) => onTipOutPercentChange(e.target.value)}
-            />
-          </label>
-
-          <label className="bartender-tip-inline">
-            CC
-            <input value={money(bartenderTotals.cc)} readOnly />
-          </label>
-
-          <label className="bartender-tip-inline">
-            Cash
-            <input value={money(bartenderTotals.cash)} readOnly />
-          </label>
-
-          <label className="bartender-check">
-            <input
-              type="checkbox"
-              checked={bartenderEnabled}
-              onChange={(e) => onBartenderEnabledChange(e.target.checked)}
-            />
-            Bartender
-          </label>
-          
-        </div>
 
 <label className="bartender-check no-print">
   <input
@@ -333,6 +290,9 @@ const updatedRow = {
             <th>Srv Cash</th>
             <th>BB CC</th>
             <th>BB Cash</th>
+            <th className="no-print">Bar %</th>
+            <th className="no-print">Bar CC</th>
+            <th className="no-print">Bar Cash</th>
             <th className="no-print">Pool</th>
             <th className="no-print">X</th>
           </tr>
@@ -342,8 +302,6 @@ const updatedRow = {
           {rows.map((row, index) => {
             const calculated = calculateServerRow(
   row,
-  bartenderEnabled,
-  bartenderPercentNumber,
   hasBusboy ? busboyPercentNumber : 0
 );
 const pooledTips = getPooledServerTips(index);
@@ -503,6 +461,24 @@ const pooledTips = getPooledServerTips(index);
   }
 />
                 </td>
+
+                <td className="no-print">
+  <input
+    value={row.bartenderPercent ?? ""}
+    placeholder="0"
+    onChange={(e) =>
+      updateServer(index, "bartenderPercent", e.target.value)
+    }
+  />
+</td>
+
+                <td className="no-print">
+  <input value={money(calculated.bartenderCc)} readOnly />
+</td>
+
+                <td className="no-print">
+  <input value={money(calculated.bartenderCash)} readOnly />
+</td>
 
                 <td className="no-print">
   <input

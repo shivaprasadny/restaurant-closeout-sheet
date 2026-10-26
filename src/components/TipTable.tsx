@@ -3,6 +3,13 @@ import {
   getCompactEmployeeName,
   getEmployeesForPosition,
 } from "../data/employees";
+import {
+  DEFAULT_BUSBOY_SHARE,
+  getBusboyShareRatio,
+} from "../utils/closeoutCalculations";
+
+// Share buttons move 5% at a time, between 5% and 100%
+const BUSBOY_SHARE_STEP = 5;
 
 /**
  * TipTable
@@ -14,6 +21,7 @@ import {
  * - PM Manager
  *
  * Busboy:
+ * - Has Share column: manager decides each busboy's part of the pool.
  * - Has extra Cash Tips column.
  * - Floor Tips can later come from server BB CC split.
  *
@@ -99,19 +107,17 @@ onAutoSplitChange,
   // When turning Auto Split OFF,
   // copy current calculated values into editable inputs.
   if (!checked && isBusboy) {
-    const activeBusboyCount = rows.filter(
-      (r) => r.name.trim() !== ""
-    ).length;
+    rows.forEach((_, rowIndex) => {
+      const shareRatio = getBusboyShareRatio(rows, rowIndex);
 
-    rows.forEach((row, rowIndex) => {
-      if (row.name.trim() === "" || activeBusboyCount === 0) {
+      if (shareRatio === 0) {
         onChange(type, rowIndex, "floorTips", "");
         onChange(type, rowIndex, "cashTips", "");
         return;
       }
 
-      const floorAmount = floorTipPool / activeBusboyCount;
-      const cashAmount = cashTipPool / activeBusboyCount;
+      const floorAmount = floorTipPool * shareRatio;
+      const cashAmount = cashTipPool * shareRatio;
 
       onChange(type, rowIndex, "floorTips", floorAmount.toFixed(2));
       onChange(type, rowIndex, "cashTips", cashAmount.toFixed(2));
@@ -143,6 +149,7 @@ onAutoSplitChange,
         <thead>
           <tr>
             <th>Name</th>
+            {isBusboy && <th className="busboy-share-col no-print">Share</th>}
             <th>House Chg Tips</th>
             <th>CC Tips</th>
             <th>Floor Tips</th>
@@ -156,19 +163,17 @@ onAutoSplitChange,
 
         <tbody>
           {rows.map((row, index) => {
-            // Count only busboys with a name.
-            const activeBusboyCount = isBusboy
-              ? rows.filter((r) => r.name.trim() !== "").length
-              : 0;
-
-            // Busboy floor tips are split by active busboys.
+            // Busboy tips are split by each busboy's Share.
             // Manager floor tips stay manual.
+            const shareRatio = isBusboy ? getBusboyShareRatio(rows, index) : 0;
+            const shareValue = row.share?.trim()
+              ? Number(row.share)
+              : DEFAULT_BUSBOY_SHARE;
+
           const floorTips =
   isBusboy
     ? autoSplit
-      ? row.name.trim() !== "" && activeBusboyCount > 0
-        ? floorTipPool / activeBusboyCount
-        : 0
+      ? floorTipPool * shareRatio
       : Number(row.floorTips || 0)
     : Number(row.floorTips || 0);
 
@@ -177,9 +182,7 @@ onAutoSplitChange,
               const cashTips =
   isBusboy
     ? autoSplit
-      ? row.name.trim() !== "" && activeBusboyCount > 0
-        ? cashTipPool / activeBusboyCount
-        : 0
+      ? cashTipPool * shareRatio
       : Number(row.cashTips || 0)
     : 0;
 
@@ -203,6 +206,34 @@ onAutoSplitChange,
     }
   />
 </td>
+
+{isBusboy && (
+  <td className="busboy-share-col no-print">
+    <div className="busboy-share-stepper">
+      <button
+        type="button"
+        aria-label={`Lower ${row.name || "busboy"} share`}
+        disabled={shareValue <= BUSBOY_SHARE_STEP}
+        onClick={() =>
+          onChange(type, index, "share", String(shareValue - BUSBOY_SHARE_STEP))
+        }
+      >
+        −
+      </button>
+      <span>{shareValue}%</span>
+      <button
+        type="button"
+        aria-label={`Raise ${row.name || "busboy"} share`}
+        disabled={shareValue >= DEFAULT_BUSBOY_SHARE}
+        onClick={() =>
+          onChange(type, index, "share", String(shareValue + BUSBOY_SHARE_STEP))
+        }
+      >
+        +
+      </button>
+    </div>
+  </td>
+)}
 
 <td>
   <input

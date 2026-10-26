@@ -22,6 +22,8 @@ export type SalesRow = {
 export type ServerRow = {
   name: string;
   poolGroup: string;
+  // Blank means this server uses the shift's Tip Out %
+  bartenderPercent: string;
   total: string;
   food: string;
   alcohol: string;
@@ -38,6 +40,8 @@ export type ServerRow = {
 };
 export type TipRow = {
   name: string;
+  // Busboy share of the tip pool; blank counts as 100
+  share: string;
   houseChargeTips: string;
   ccTips: string;
   floorTips: string;

@@ -1,6 +1,12 @@
 import type{ CheckLogRow } from "../types/closeout.types";
 import SectionHeader from "./SectionHeader";
-import { allEmployeeNames } from "../data/employees";
+import { getEmployeesForPosition } from "../data/employees";
+
+/* Check log only lists servers, plus a Take Out row */
+const checkLogNames = [
+  "Take Out",
+  ...getEmployeesForPosition("Server").map((employee) => employee.name),
+];
 
 /**
  * Check Log Table
@@ -44,7 +50,7 @@ export default function CheckLogTable({
       />
 
       <datalist id={employeeListId}>
-        {allEmployeeNames.map((employeeName) => (
+        {checkLogNames.map((employeeName) => (
           <option key={employeeName} value={employeeName} />
         ))}
       </datalist>

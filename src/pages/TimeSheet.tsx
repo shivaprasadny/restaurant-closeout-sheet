@@ -301,6 +301,7 @@ export default function TimeSheet({
         onNavigate={onNavigate}
         onPrint={() => window.print()}
         printLabel="Print Time Sheet"
+        pdfTitle="Time Sheet"
         saveNotice={saveNotice}
       />
 
