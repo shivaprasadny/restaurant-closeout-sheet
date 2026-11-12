@@ -22,6 +22,7 @@ export const employees: Employee[] = [
   { name: "Eugene Ivanov", positions: ["Manager", "Waiter"] },
   { name: "Julio Rosales", positions: ["Manager", "Waiter"] },
   { name: "Shai Levy", positions: ["Manager", "Waiter"] },
+  { name: "Pamela Murphy", positions: ["Manager", "Waiter"] },
   { name: "Jhosue Pumar (David)", positions: ["Waiter"] },
   { name: "Muhammad Elbalam (Mo)", positions: ["Waiter"] },
   { name: "Edgar Lopez", positions: ["BB"] },
